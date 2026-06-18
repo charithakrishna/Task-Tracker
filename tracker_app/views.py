@@ -1,11 +1,11 @@
-import json  # <-- Missing built-in dependency for parsing incoming API requests
+import json
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-from .models import Task  # <-- Missing Model Import that broke both dashboards!
+from .models import Task, Profile
 
 # --- EMPLOYEE AUTHENTICATION ---
 
@@ -14,31 +14,70 @@ def employee_register(request):
         # Handles both normal form submissions and AJAX fetch requests
         if request.content_type == 'application/json':
             data = json.loads(request.body)
-            username = data.get('username')
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+            employee_id = data.get('employee_id')  # Maps directly to User.username
+            role = data.get('role')
             email = data.get('email')
+            phone_number = data.get('phone_number')
             password = data.get('password')
         else:
-            username = request.POST.get('username')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            employee_id = request.POST.get('employee_id')
+            role = request.POST.get('role')
             email = request.POST.get('email')
+            phone_number = request.POST.get('phone_number')
             password = request.POST.get('password')
 
-        # Simple validation check
-        if not username or not email or not password:
+        # Simple verification check for all required data fields
+        if not all([first_name, last_name, employee_id, role, email, phone_number, password]):
+            error_msg = 'All fields are strictly required.'
             if request.content_type == 'application/json':
-                return JsonResponse({'status': 'error', 'error': 'All fields are required.'}, status=400)
-            messages.error(request, 'All fields are required.')
+                return JsonResponse({'status': 'error', 'error': error_msg}, status=400)
+            messages.error(request, error_msg)
+            return render(request, 'employee/register.html')
+
+        # Explicit database constraints check matching requirements
+        if User.objects.filter(username=employee_id).exists():
+            msg = "User with the same employee id exists"
+            if request.content_type == 'application/json':
+                return JsonResponse({'status': 'error', 'error': msg}, status=400)
+            messages.error(request, msg)
+            return render(request, 'employee/register.html')
+
+        if User.objects.filter(email=email).exists():
+            msg = "User with the same email exists"
+            if request.content_type == 'application/json':
+                return JsonResponse({'status': 'error', 'error': msg}, status=400)
+            messages.error(request, msg)
+            return render(request, 'employee/register.html')
+
+        if Profile.objects.filter(phone_number=phone_number).exists():
+            msg = "User with the same phone number exists"
+            if request.content_type == 'application/json':
+                return JsonResponse({'status': 'error', 'error': msg}, status=400)
+            messages.error(request, msg)
             return render(request, 'employee/register.html')
 
         try:
-            # Check if the user handle or email already exists in SQLite
-            if User.objects.filter(username=username).exists():
-                raise ValueError('That username is already taken.')
-            if User.objects.filter(email=email).exists():
-                raise ValueError('An account with that email already exists.')
-
             # Create user instance and safely encrypt/hash the password
-            user = User.objects.create_user(username=username, email=email, password=password)
+            user = User.objects.create_user(
+                username=employee_id,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
             user.save()
+
+            # Create corresponding model profile link details
+            profile = Profile.objects.create(
+                user=user,
+                phone_number=phone_number,
+                role=role
+            )
+            profile.save()
 
             if request.content_type == 'application/json':
                 return JsonResponse({'status': 'success', 'redirect_url': '/'})
@@ -52,7 +91,7 @@ def employee_register(request):
             messages.error(request, str(e))
             return render(request, 'employee/register.html')
 
-    # Default GET logic to load the clean template state
+    # Default GET logic to load clean template state
     return render(request, 'employee/register.html')
 
 
@@ -63,18 +102,29 @@ def employee_login(request):
         return redirect('employee_dashboard')
 
     if request.method == 'POST':
-        data = request.POST
-        username = data.get('username')
-        password = data.get('password')
+        login_method = request.POST.get('login_method')  # 'emp_id' or 'email'
+        identifier = request.POST.get('identifier')
+        password = request.POST.get('password')
         
-        user = authenticate(request, username=username, password=password)
+        target_username = identifier
+
+        # Dual-Route Verification Strategy
+        if login_method == 'email':
+            matched_user = User.objects.filter(email=identifier).first()
+            if matched_user:
+                target_username = matched_user.username
+            else:
+                messages.error(request, "Invalid email or password.")
+                return render(request, 'employee/login.html')
+
+        user = authenticate(request, username=target_username, password=password)
         if user is not None:
             login(request, user)
             if user.is_staff:
                 return redirect('admin_dashboard')
             return redirect('employee_dashboard')
         else:
-            messages.error(request, "Invalid username or password.")
+            messages.error(request, f"Invalid {'employee id' if login_method == 'emp_id' else 'email'} or password.")
             return render(request, 'employee/login.html')
 
     return render(request, 'employee/login.html')
@@ -87,7 +137,7 @@ def employee_dashboard(request):
     # Active workspace task items (Excludes Completed)
     active_tasks = Task.objects.filter(assigned_to=request.user).exclude(status='COMPLETED')
     
-    # Modification 3 Context Data: Complete history array trace
+    # Complete history array trace
     absolute_history = Task.objects.filter(assigned_to=request.user)
     
     pending_count = absolute_history.filter(status='PENDING').count()
@@ -96,7 +146,7 @@ def employee_dashboard(request):
     
     context = {
         'tasks': active_tasks,
-        'absolute_history': absolute_history, # Passed directly into the template
+        'absolute_history': absolute_history,
         'stats': {
             'pending': pending_count,
             'progressing': progress_count,
@@ -104,6 +154,69 @@ def employee_dashboard(request):
         }
     }
     return render(request, 'employee/dashboard.html', context)
+
+
+def reset_password(request):
+    if request.method == 'GET':
+        return render(request, 'reset_password.html')
+
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            action = data.get('action')
+            
+            # --- PHASE 1: VERIFY IDENTITY ---
+            if action == 'verify':
+                lookup_value = data.get('lookup_value', '').strip()
+                phone_number = data.get('phone_number', '').strip()
+                
+                if not lookup_value or not phone_number:
+                    return JsonResponse({'error': 'All fields are required.'}, status=400)
+                
+                # Fetch user from auth_user
+                user = User.objects.filter(username=lookup_value).first() or User.objects.filter(email=lookup_value).first()
+                
+                if not user:
+                    return JsonResponse({'error': 'No profile matches the provided credential.'}, status=404)
+                
+                # FIX: Access the related profile from tracker_app_profile
+                # Django models typically allow reaching the profile via 'profile' or your model name lowercase
+                user_profile = getattr(user, 'profile', None)
+                
+                if not user_profile:
+                    return JsonResponse({'error': 'No linked profile structure found for this user.'}, status=400)
+                
+                # Extract phone_number field from the profile object
+                db_phone = getattr(user_profile, 'phone_number', '')
+                
+                if not db_phone or phone_number.replace(" ", "") not in db_phone.replace(" ", ""):
+                    return JsonResponse({'error': 'Verification failed. Phone number mismatch.'}, status=400)
+                    
+                return JsonResponse({'status': 'verified', 'user_id': user.id})
+                
+            # --- PHASE 2: UPDATE PASSWORD ---
+            elif action == 'update':
+                user_id = data.get('user_id')
+                new_password = data.get('password')
+                
+                if not user_id or not new_password:
+                    return JsonResponse({'error': 'Missing verification parameters.'}, status=400)
+                    
+                user = User.objects.filter(id=user_id).first()
+                if not user:
+                    return JsonResponse({'error': 'User target signature missing.'}, status=404)
+                    
+                user.set_password(new_password)
+                user.save()
+                return JsonResponse({'status': 'success'})
+                
+            else:
+                return JsonResponse({'error': 'Invalid functional flow action.'}, status=400)
+                
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 def user_logout(request):
@@ -130,14 +243,13 @@ def admin_login(request):
             
     return render(request, 'admin_portal/login.html')
 
-# Update the admin_dashboard to extract data records from Dataverse
+
 def admin_dashboard(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
         
-    # Fetch all users who are NOT administrative staff (your employees)
+    # Correctly pulls all User records containing the injected .first_name and .last_name parameters
     employees = User.objects.filter(is_staff=False)
-    # Fetch all tasks order tracked across the infrastructure
     all_tasks = Task.objects.all()
     
     return render(request, 'admin_portal/dashboard.html', {
@@ -145,22 +257,39 @@ def admin_dashboard(request):
         'all_tasks': all_tasks
     })
 
+
 # --- NEW ADMIN API ENDPOINTS FOR CREATION / ASSIGNMENTS ---
 
 def admin_create_user(request):
     if request.method == 'POST' and request.user.is_staff:
-        data = json.loads(request.body)
         try:
+            data = json.loads(request.body)
+            
+            # 1. Grab values from payload, map fallback string defaults
+            username = data.get('username')
+            email = data.get('email')
+            password = data.get('password')
+            first_name = data.get('first_name', '')
+            last_name = data.get('last_name', '')
+            is_staff_member = data.get('is_staff', True) # Defaults to true if omitted
+            
+            # 2. Instantiate user object with structural name fields
             user = User.objects.create_user(
-                username=data.get('username'),
-                email=data.get('email'),
-                password=data.get('password')
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
             )
             user.save()
+            
             return JsonResponse({'status': 'success'})
+            
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+            
     return JsonResponse({'error': 'Unauthorized view constraint'}, status=403)
+
 
 def admin_assign_task(request):
     if request.method == 'POST' and request.user.is_staff:
@@ -186,7 +315,6 @@ def admin_assign_task(request):
 def update_task_status(request, task_id):
     if request.method == 'POST':
         try:
-            # Parse incoming body parameters
             data = json.loads(request.body)
             new_status = data.get('status')
             
@@ -206,7 +334,7 @@ def update_task_status(request, task_id):
             
     return JsonResponse({'error': 'Invalid method'}, status=400)
 
-# Update the delete task method to actively handle administrative clear actions
+
 def delete_task(request, task_id):
     if request.method == 'DELETE' and request.user.is_staff:
         try:

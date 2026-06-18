@@ -3,6 +3,18 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block layout_container %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+    <div id="liveToast" class="toast align-items-center text-white border-0 rounded-3 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2 fw-semibold">
+                <i id="toastIcon" class="bi fs-5"></i>
+                <span id="toastMessage"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <div class="container-fluid p-0">
     <nav class="navbar navbar-expand bg-white border-bottom shadow-sm px-4 py-3 mb-5">
         <div class="container py-1">
@@ -37,19 +49,31 @@
             <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4">
                 <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-gear me-2"></i>New Account Form</h5>
                 <form id="createUserForm" class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label small text-muted fw-bold">Username</label>
-                        <input type="text" id="new_username" class="form-control" placeholder="Enter username..." required>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">First Name</label>
+                        <input type="text" id="new_first_name" class="form-control" placeholder="Enter first name..." required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">Last Name</label>
+                        <input type="text" id="new_last_name" class="form-control" placeholder="Enter last name..." required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">Employee ID</label>
+                        <input type="text" id="new_employee_id" class="form-control" placeholder="Enter employee ID..." required>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Email Address</label>
                         <input type="email" id="new_email" class="form-control" placeholder="Enter email address..." required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Password</label>
                         <input type="password" id="new_password" class="form-control" placeholder="Create password..." required>
                     </div>
-                    <div class="col-12 text-end mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">Confirm Password</label>
+                        <input type="password" id="new_password_confirm" class="form-control" placeholder="Repeat password..." required>
+                    </div>
+                    <div class="col-12 text-end mt-4">
                         <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn">Save New Account</button>
                     </div>
                 </form>
@@ -84,7 +108,7 @@
                             <select id="task_user" class="form-select bg-light border py-2.5 rounded-3" required>
                                 <option value="">-- Choose an employee --</option>
                                 {% for employee in employees %}
-                                    <option value="{{ employee.id }}">{{ employee.username }}</option>
+                                    <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -129,7 +153,11 @@
                                             <span class="fw-bold text-dark mb-0 d-block">{{ task.title }}</span>
                                             <small class="text-muted d-block text-truncate">{{ task.description }}</small>
                                         </td>
-                                        <td class="py-3"><span class="badge bg-white text-dark border rounded-3 px-2 py-1.5"><i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.username }}</span></td>
+                                        <td class="py-3">
+                                            <span class="badge bg-white text-dark border rounded-3 px-2 py-1.5">
+                                                <i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
+                                            </span>
+                                        </td>
                                         <td class="py-3">
                                             <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2 py-1.5 rounded-3">
                                                 {{ task.get_priority_display }}
@@ -175,7 +203,33 @@
 
 {% block scripts %}
 <script>
+    // Global notification engine utilizing Bootstrap Toasts
+    function showToast(message, type = 'success') {
+        const toastEl = document.getElementById('liveToast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+        
+        toastMessage.innerText = message;
+        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+        toastIcon.classList.remove('bi-check-circle-fill', 'bi-exclamation-triangle-fill', 'bi-info-circle-fill');
+
+        if (type === 'success') {
+            toastEl.classList.add('bg-success');
+            toastIcon.classList.add('bi-check-circle-fill');
+        } else if (type === 'danger') {
+            toastEl.classList.add('bg-danger');
+            toastIcon.classList.add('bi-exclamation-triangle-fill');
+        } else {
+            toastEl.classList.add('bg-warning', 'text-dark');
+            toastIcon.classList.add('bi-info-circle-fill');
+        }
+
+        const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+        toast.show();
+    }
+
     (function generateAdminAvatar() {
+        // FIX: Changed request.user.employee_id to request.user.username
         const nameStr = "{{ request.user.username }}";
         const blocks = nameStr.trim().split(/\s+/);
         let initials = "";
@@ -192,19 +246,35 @@
 
     document.getElementById('createUserForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        const password = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('new_password_confirm').value;
+
+        if (password !== confirmPassword) {
+            showToast('Passphrases do not match. Review entries.', 'danger');
+            return;
+        }
+
         fetch("{% url 'admin_create_user' %}", {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
             body: JSON.stringify({
-                username: document.getElementById('new_username').value,
-                email: document.getElementById('new_email').value,
-                password: document.getElementById('new_password').value
+                first_name: document.getElementById('new_first_name').value.trim(),
+                last_name: document.getElementById('new_last_name').value.trim(),
+                username: document.getElementById('new_employee_id').value.trim(), 
+                email: document.getElementById('new_email').value.trim(),
+                password: password,
+                is_staff: true 
             })
         })
         .then(res => res.json())
         .then(data => {
-            if(data.status === 'success') { alert('User account created!'); location.reload(); }
-            else { alert('Error: ' + data.error); }
+            if(data.status === 'success') { 
+                showToast('Employee account established successfully.');
+                setTimeout(() => location.reload(), 1200);
+            } else { 
+                showToast(data.error, 'danger'); 
+            }
         });
     });
 
@@ -218,7 +288,6 @@
 
         let isValid = true;
 
-        // Title Check Execution Block
         if (!titleInput.value.trim()) {
             titleInput.classList.add('is-invalid');
             isValid = false;
@@ -226,7 +295,6 @@
             titleInput.classList.remove('is-invalid');
         }
 
-        // Dropdown Selection User Check Execution Block
         if (!userInput.value) {
             userInput.classList.add('is-invalid');
             isValid = false;
@@ -238,16 +306,13 @@
             isValid = false;
         }
 
-        // Evaluate Validation Results
         if (!isValid) {
-            warningCard.classList.remove('d-none'); // Reveal the Warning Alert Card frame node
+            warningCard.classList.remove('d-none');
             return;
         }
 
-        // Hide Warning Card if everything looks solid before shipping data
         warningCard.classList.add('d-none');
 
-        // Fire Fetch Network Request Payload to Database Bridge View Callback
         fetch("{% url 'admin_assign_task' %}", {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
@@ -261,15 +326,14 @@
         .then(res => res.json())
         .then(data => {
             if(data.status === 'success') { 
-                alert('Task assigned successfully!'); 
-                location.reload(); 
+                showToast('Work order dispatched and assigned successfully.');
+                setTimeout(() => location.reload(), 1200);
             } else { 
-                alert('Error: ' + data.error); 
+                showToast(data.error, 'danger'); 
             }
         });
     });
 
-    // Helper closure listeners to remove alerts real-time during inputs
     function checkValidationState() {
         const titleInput = document.getElementById('task_title');
         const userInput = document.getElementById('task_user');
@@ -302,7 +366,10 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data.status === 'success') { document.getElementById(`admin-task-row-${taskId}`).remove(); }
+                if(data.status === 'success') { 
+                    document.getElementById(`admin-task-row-${taskId}`).remove();
+                    showToast('Assigned log entry removed.');
+                }
             });
         }
     }

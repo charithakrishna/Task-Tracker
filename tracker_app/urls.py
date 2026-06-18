@@ -20,4 +20,5 @@ urlpatterns = [
     path('api/admin/assign-task/', views.admin_assign_task, name='admin_assign_task'),
     path('api/tasks/<int:task_id>/update/', views.update_task_status, name='update_task_status'),
     path('api/tasks/<int:task_id>/delete/', views.delete_task, name='delete_task'),
+    path('forgot-password/', views.reset_password, name='reset_password'),
 ]

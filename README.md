@@ -35,4 +35,4 @@ git push
 | chaitanyakumar-inf  | chaitanyakumars@infinite.com  | chaitanya123 |
 | charitha | charitha@infinite.com | charitha123 |
 | Ashiq Shapi | ashiqs@infinite.com  | ashiq123  |
-| admin | admin@infinite.com  | password  |
+| admin | admin@infinite.com  | Admin@123  |
