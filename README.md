@@ -29,10 +29,11 @@ git push
 ```
 
 # Test User Creds
+> `admin` is the super user. Access admin page at : 127.0.0.1:8000/admin/portal/login
 
-| Username | Email | Password |
+| Emp ID / Username | Email | Password |
 | :--- | :--- | :--- |
-| chaitanyakumar-inf  | chaitanyakumars@infinite.com  | chaitanya123 |
-| charitha | charitha@infinite.com | charitha123 |
-| Ashiq Shapi | ashiqs@infinite.com  | ashiq123  |
 | admin | admin@infinite.com  | Admin@123  |
+| 1040666  | chaitanyakumars@infinite.com  | chaitu123 |
+| 1040669 | charithasree@infinite.com | charitha123 |
+|1040585 | poojithap@infinite.com | poojitha123 |
