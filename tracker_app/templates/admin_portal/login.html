@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Access Control - TaskTracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5">
+        <div class="card shadow border-0 bg-dark text-white">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-2 fw-bold text-warning">🛡️ Admin Portal</h2>
+                <p class="text-center text-muted small mb-4">Authorized Administrative Personnel Only</p>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger text-dark alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" action="{% url 'admin_login' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-white-50">Admin Username</label>
+                        <input type="text" name="username" class="form-control bg-secondary text-white border-0" id="username" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-white-50">Master Password</label>
+                        <input type="password" name="password" class="form-control bg-secondary text-white border-0" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 py-2 fw-bold mb-3">Initialize Admin Session</button>
+                </form>
+                <div class="text-center">
+                    <a href="{% url 'employee_login' %}" class="text-info small text-decoration-none">← Return to standard Employee Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

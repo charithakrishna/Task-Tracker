@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}Employee Dashboard{% endblock %}
+
+{% block layout_container %}
+<div class="container-fluid p-0">
+    <!-- Top Simple Navigation Bar -->
+    <nav class="navbar navbar-expand bg-white border-bottom shadow-sm px-4 py-3 mb-5">
+        <div class="container py-1">
+            <span class="navbar-brand fw-bold text-dark d-flex align-items-center gap-2 m-0 fs-5">
+                <i class="bi bi-box-fill text-primary"></i> Employee Portal
+            </span>
+            
+            <!-- User Dropdown Menu -->
+            <div class="dropdown ms-auto">
+                <button class="btn btn-link link-dark text-decoration-none d-flex align-items-center gap-2 p-0 dropdown-toggle border-0" type="button" id="userMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="userAvatarNode" class="text-white fw-bold small rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;"></span>
+                    <span class="fw-semibold small text-dark d-none d-sm-inline">{{ request.user.username }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2 rounded-4" aria-labelledby="userMenuButton" style="min-width: 160px;">
+                    <li><a class="dropdown-item rounded-3 py-2 text-danger fw-semibold mb-0" href="{% url 'user_logout' %}"><i class="bi bi-box-arrow-left me-2"></i> Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container px-3 px-md-4">
+        <!-- Welcome Header -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-4 mb-5">
+            <div>
+                <h2 class="fw-bold text-dark tracking-tight mb-1">Hello, {{ request.user.username }} 👋</h2>
+                <p class="text-muted small mb-0">Here is a quick look at your tasks and progress today.</p>
+            </div>
+            <button class="btn btn-primary btn-sm ui-pill-btn px-4 py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#allTasksModal">
+                <i class="bi bi-clock-history me-1"></i> View Full Task History
+            </button>
+        </div>
+
+        <!-- Task Count Summary Boxes -->
+        <div class="row g-4 mb-5">
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-metric-card d-flex align-items-center justify-content-between border">
+                    <div><span class="text-muted small d-block mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 11px;">Total Tasks</span><h3 class="fw-bold mb-0 text-dark">{{ absolute_history.count }}</h3></div>
+                    <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-4"><i class="bi bi-clipboard-data fs-4"></i></div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-metric-card d-flex align-items-center justify-content-between border">
+                    <div><span class="text-muted small d-block mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 11px;">Completed</span><h3 class="fw-bold mb-0 text-success">{{ stats.completed }}</h3></div>
+                    <div class="bg-success bg-opacity-10 text-success p-3 rounded-4"><i class="bi bi-check-circle fs-4"></i></div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-metric-card d-flex align-items-center justify-content-between border">
+                    <div><span class="text-muted small d-block mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 11px;">Pending</span><h3 class="fw-bold mb-0 text-warning">{{ stats.pending }}</h3></div>
+                    <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-4"><i class="bi bi-hourglass-split fs-4"></i></div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-metric-card d-flex align-items-center justify-content-between border">
+                    <div><span class="text-muted small d-block mb-1 fw-semibold text-uppercase tracking-wider" style="font-size: 11px;">In Progress</span><h3 class="fw-bold mb-0 text-info">{{ stats.progressing }}</h3></div>
+                    <div class="bg-info bg-opacity-10 text-info p-3 rounded-4"><i class="bi bi-gear-transition fs-4"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Distribution Chart Overview -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="dashboard-metric-card p-4 border shadow-sm">
+                    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-pie-chart me-2 text-primary"></i>Task Progress Chart</h5>
+                    <div class="d-flex justify-content-center align-items-center py-2" style="height: 180px;">
+                        <canvas id="taskDoughnutChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clean & Spaced Task List Table -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="dashboard-metric-card border shadow-sm p-4">
+                    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-list-task me-2 text-primary"></i>Your Current Tasks</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 12px;">
+                            <thead>
+                                <tr class="text-muted small text-uppercase" style="letter-spacing: 0.5px;">
+                                    <th class="border-0 pb-3 ps-3">Task Details</th>
+                                    <th class="border-0 pb-3">Priority</th>
+                                    <th class="border-0 pb-3">Status</th>
+                                    <th class="border-0 pb-3 text-end pe-3">Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if tasks %}
+                                    {% for task in tasks %}
+                                    <tr id="task-card-{{ task.id }}" class="bg-light shadow-sm rounded-4">
+                                        <td class="ps-3 py-3 rounded-start-4">
+                                            <span class="fw-bold text-dark d-block mb-1 fs-6">{{ task.title }}</span>
+                                            <small class="text-muted text-wrap d-inline-block">{{ task.description }}</small>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-3 py-2 rounded-3">
+                                                {{ task.get_priority_display }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="badge {% if task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-3 py-2 rounded-3" id="status-badge-{{ task.id }}">
+                                                {{ task.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="text-end py-3 pe-3 rounded-end-4">
+                                            <select class="form-select form-select-sm border border-secondary border-opacity-20 bg-white rounded-3 shadow-sm d-inline-block w-auto py-2 px-3" onchange="updateTaskStatus('{{ task.id }}', this.value)">
+                                                <option value="PENDING" {% if task.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                                <option value="PROGRESSING" {% if task.status == 'PROGRESSING' %}selected{% endif %}>In Progress</option>
+                                                <option value="COMPLETED">Mark as Completed</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="4" class="text-center text-muted py-5 rounded-4 bg-light border">🎉 No active tasks right now. Great job!</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Tasks History Modal Window -->
+<div class="modal fade" id="allTasksModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 bg-light p-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-folder2-open me-2 text-primary"></i> Full Task History</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="table-responsive" style="max-height: 450px;">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr class="text-muted small">
+                                <th class="ps-4 py-3">Task Details</th>
+                                <th class="py-3">Priority</th>
+                                <th class="py-3">Current Status</th>
+                                <th class="text-end pe-4 py-3">Change Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for h_task in absolute_history %}
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <span class="fw-bold text-dark d-block mb-1">{{ h_task.title }}</span>
+                                    <small class="text-muted">{{ h_task.description|truncatechars:50 }}</small>
+                                </td>
+                                <td class="py-3">
+                                    <span class="badge {% if h_task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif h_task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2.5 py-1.5 rounded-3">
+                                        {{ h_task.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="badge {% if h_task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif h_task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-2.5 py-1.5 rounded-3" id="modal-badge-{{ h_task.id }}">
+                                        {{ h_task.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4 py-3">
+                                    <select class="form-select form-select-sm border bg-light rounded-3 w-auto d-inline-block" onchange="updateTaskStatus('{{ h_task.id }}', this.value)">
+                                        <option value="PENDING" {% if h_task.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                        <option value="PROGRESSING" {% if h_task.status == 'PROGRESSING' %}selected{% endif %}>In Progress</option>
+                                        <option value="COMPLETED" {% if h_task.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-3 bg-light" style="border-radius: 0 0 20px 20px;">
+                <button type="button" class="btn btn-primary btn-sm ui-pill-btn px-4 py-2" onclick="location.reload()">Refresh Page</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function generateDynamicAvatar() {
+        const nameStr = "{{ request.user.username }}";
+        const blocks = nameStr.trim().split(/\s+/);
+        let initials = "";
+        if (blocks.length > 1) {
+            initials = blocks[0][0].toUpperCase() + blocks[1][0].toUpperCase();
+        } else if (blocks.length === 1 && blocks[0].length > 0) {
+            initials = blocks[0][0].toUpperCase();
+        }
+        const palette = ['#2563eb', '#059669', '#7c3aed', '#db2777', '#0891b2'];
+        const randomColor = palette[Math.floor(Math.random() * palette.length)];
+        const avatarNode = document.getElementById('userAvatarNode');
+        if(avatarNode) { avatarNode.innerText = initials; avatarNode.style.backgroundColor = randomColor; }
+    })();
+
+    const ctx = document.getElementById('taskDoughnutChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Progress', 'Completed'],
+            datasets: [{
+                data: [{{ stats.pending }}, {{ stats.progressing }}, {{ stats.completed }}],
+                backgroundColor: ['#ffb020', '#14b8a6', '#10b981'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '80%',
+            plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 20, font: { size: 12, weight: '600' } } } }
+        }
+    });
+
+    function updateTaskStatus(taskId, newStatus) {
+        fetch(`/api/tasks/${taskId}/update/`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const modalBadge = document.getElementById(`modal-badge-${taskId}`);
+                if(modalBadge) {
+                    modalBadge.innerText = newStatus === 'COMPLETED' ? 'Completed' : (newStatus === 'PROGRESSING' ? 'In Progress' : 'Pending');
+                    modalBadge.className = newStatus === 'COMPLETED' ? 'badge bg-success bg-opacity-10 text-success' : (newStatus === 'PROGRESSING' ? 'badge bg-primary bg-opacity-10 text-primary' : 'badge bg-warning bg-opacity-10 text-warning-emphasis');
+                }
+                const card = document.getElementById(`task-card-${taskId}`);
+                if (newStatus === 'COMPLETED' && card) {
+                    card.remove();
+                } else if (card) {
+                    const mainBadge = document.getElementById(`status-badge-${taskId}`);
+                    mainBadge.innerText = newStatus === 'PROGRESSING' ? 'In Progress' : 'Pending';
+                    mainBadge.className = newStatus === 'PROGRESSING' ? 'badge bg-primary bg-opacity-10 text-primary' : 'badge bg-warning bg-opacity-10 text-warning-emphasis';
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

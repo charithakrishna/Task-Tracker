@@ -1,0 +1,4 @@
+Django>=5.0,<6.0
+django-cors-headers>=4.0.0  # Helpful if you make cross-origin Fetch API requests later
+asgiref>=3.7.0
+sqlparse>=0.4.4

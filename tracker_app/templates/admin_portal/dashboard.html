@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block layout_container %}
+<div class="container-fluid p-0">
+    <nav class="navbar navbar-expand bg-white border-bottom shadow-sm px-4 py-3 mb-5">
+        <div class="container py-1">
+            <span class="navbar-brand fw-bold text-dark d-flex align-items-center gap-2 m-0 fs-5">
+                <i class="bi bi-shield-fill-check text-danger"></i> Admin Dashboard
+            </span>
+            
+            <div class="dropdown ms-auto">
+                <button class="btn btn-link link-dark text-decoration-none d-flex align-items-center gap-2 p-0 dropdown-toggle border-0" type="button" id="adminMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="adminAvatarNode" class="text-white fw-bold small rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;"></span>
+                    <span class="fw-semibold small text-dark d-none d-sm-inline">{{ request.user.username }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2 rounded-4" aria-labelledby="adminMenuButton" style="min-width: 160px;">
+                    <li><a class="dropdown-item rounded-3 py-2 text-danger fw-semibold mb-0" href="{% url 'user_logout' %}"><i class="bi bi-box-arrow-left me-2"></i> Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container px-3 px-md-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Admin Panel</h3>
+                <p class="text-muted small mb-0">Create new accounts and assign tasks to employees below.</p>
+            </div>
+            <button class="btn btn-outline-primary btn-sm ui-pill-btn px-4 py-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#createUserCollapse">
+                <i class="bi bi-person-add me-1"></i> Create Employee Account
+            </button>
+        </div>
+
+        <div class="collapse mb-5" id="createUserCollapse">
+            <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-gear me-2"></i>New Account Form</h5>
+                <form id="createUserForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-bold">Username</label>
+                        <input type="text" id="new_username" class="form-control" placeholder="Enter username..." required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-bold">Email Address</label>
+                        <input type="email" id="new_email" class="form-control" placeholder="Enter email address..." required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-bold">Password</label>
+                        <input type="password" id="new_password" class="form-control" placeholder="Create password..." required>
+                    </div>
+                    <div class="col-12 text-end mt-3">
+                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn">Save New Account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-lg-5">
+                <div class="dashboard-metric-card shadow-sm p-4 border h-100">
+                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-send-plus-fill me-2 text-primary"></i>Assign a New Task</h5>
+                    
+                    <div id="validationWarningCard" class="alert alert-danger border-danger border-opacity-20 rounded-3 d-none mb-4 p-3 shadow-sm animate-fade-in">
+                        <div class="d-flex align-items-center gap-2 fw-semibold text-danger small">
+                            <i class="bi bi-exclamation-triangle-fill fs-6"></i>
+                            <span>Required operational entries are missing. Please complete the highlighted fields.</span>
+                        </div>
+                    </div>
+
+                    <form id="assignTaskForm" novalidate>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-semibold">Task Title <span class="text-danger fw-bold">*</span></label>
+                            <input type="text" id="task_title" class="form-control bg-light border py-2.5 rounded-3" placeholder="What needs to be done?" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
+                            <textarea id="task_desc" class="form-control bg-light border border-0 rounded-3" rows="4" placeholder="Add additional details or notes here..."></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-semibold">Assign To <span class="text-danger fw-bold">*</span></label>
+                            <select id="task_user" class="form-select bg-light border py-2.5 rounded-3" required>
+                                <option value="">-- Choose an employee --</option>
+                                {% for employee in employees %}
+                                    <option value="{{ employee.id }}">{{ employee.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-5">
+                            <label class="form-label text-muted small fw-semibold d-block mb-3">Set Priority <span class="text-danger fw-bold">*</span></label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
+                                <label class="btn btn-outline-danger py-2.5 fw-semibold small" for="btn_high">High</label>
+
+                                <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
+                                <label class="btn btn-outline-warning py-2.5 fw-semibold small" for="btn_medium">Medium</label>
+
+                                <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
+                                <label class="btn btn-outline-info py-2.5 fw-semibold small" for="btn_low">Low</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100 py-3 ui-pill-btn fw-bold shadow-sm">Assign Task</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="dashboard-metric-card shadow-sm p-4 border h-100">
+                    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 10px;">
+                            <thead>
+                                <tr class="text-muted small text-uppercase">
+                                    <th class="border-0 pb-2 ps-3">Task Details</th>
+                                    <th class="border-0 pb-2">Assigned To</th>
+                                    <th class="border-0 pb-2">Priority</th>
+                                    <th class="border-0 pb-2">Status</th>
+                                    <th class="border-0 pb-2 text-center pe-3">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if all_tasks %}
+                                    {% for task in all_tasks %}
+                                    <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm">
+                                        <td class="text-wrap ps-3 py-3 rounded-start-3" style="max-width: 160px;">
+                                            <span class="fw-bold text-dark mb-0 d-block">{{ task.title }}</span>
+                                            <small class="text-muted d-block text-truncate">{{ task.description }}</small>
+                                        </td>
+                                        <td class="py-3"><span class="badge bg-white text-dark border rounded-3 px-2 py-1.5"><i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.username }}</span></td>
+                                        <td class="py-3">
+                                            <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                {{ task.get_priority_display }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="badge {% if task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                {{ task.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center py-3 pe-3 rounded-end-3">
+                                            <button class="btn btn-link link-danger p-0 border-0 shadow-none" onclick="deleteTaskByAdmin('{{ task.id }}')"><i class="bi bi-trash3 fs-5"></i></button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #dc3545 !important;
+        background-image: none !important;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.2s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function generateAdminAvatar() {
+        const nameStr = "{{ request.user.username }}";
+        const blocks = nameStr.trim().split(/\s+/);
+        let initials = "";
+        if (blocks.length > 1) {
+            initials = blocks[0][0].toUpperCase() + blocks[1][0].toUpperCase();
+        } else if (blocks.length === 1 && blocks[0].length > 0) {
+            initials = blocks[0][0].toUpperCase();
+        }
+        const palette = ['#1e293b', '#475569', '#334155'];
+        const randomColor = palette[Math.floor(Math.random() * palette.length)];
+        const avatarNode = document.getElementById('adminAvatarNode');
+        if(avatarNode) { avatarNode.innerText = initials; avatarNode.style.backgroundColor = randomColor; }
+    })();
+
+    document.getElementById('createUserForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch("{% url 'admin_create_user' %}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify({
+                username: document.getElementById('new_username').value,
+                email: document.getElementById('new_email').value,
+                password: document.getElementById('new_password').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') { alert('User account created!'); location.reload(); }
+            else { alert('Error: ' + data.error); }
+        });
+    });
+
+    document.getElementById('assignTaskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const titleInput = document.getElementById('task_title');
+        const userInput = document.getElementById('task_user');
+        const activePriority = document.querySelector('input[name="priority_opts"]:checked');
+        const warningCard = document.getElementById('validationWarningCard');
+
+        let isValid = true;
+
+        // Title Check Execution Block
+        if (!titleInput.value.trim()) {
+            titleInput.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            titleInput.classList.remove('is-invalid');
+        }
+
+        // Dropdown Selection User Check Execution Block
+        if (!userInput.value) {
+            userInput.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            userInput.classList.remove('is-invalid');
+        }
+
+        if (!activePriority) {
+            isValid = false;
+        }
+
+        // Evaluate Validation Results
+        if (!isValid) {
+            warningCard.classList.remove('d-none'); // Reveal the Warning Alert Card frame node
+            return;
+        }
+
+        // Hide Warning Card if everything looks solid before shipping data
+        warningCard.classList.add('d-none');
+
+        // Fire Fetch Network Request Payload to Database Bridge View Callback
+        fetch("{% url 'admin_assign_task' %}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify({
+                title: titleInput.value,
+                description: document.getElementById('task_desc').value,
+                user_id: userInput.value,
+                priority: activePriority.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') { 
+                alert('Task assigned successfully!'); 
+                location.reload(); 
+            } else { 
+                alert('Error: ' + data.error); 
+            }
+        });
+    });
+
+    // Helper closure listeners to remove alerts real-time during inputs
+    function checkValidationState() {
+        const titleInput = document.getElementById('task_title');
+        const userInput = document.getElementById('task_user');
+        const warningCard = document.getElementById('validationWarningCard');
+
+        if (titleInput.value.trim() && userInput.value) {
+            warningCard.classList.add('d-none');
+        }
+    }
+
+    document.getElementById('task_title').addEventListener('input', function() {
+        if (this.value.trim()) {
+            this.classList.remove('is-invalid');
+            checkValidationState();
+        }
+    });
+
+    document.getElementById('task_user').addEventListener('change', function() {
+        if (this.value) {
+            this.classList.remove('is-invalid');
+            checkValidationState();
+        }
+    });
+
+    function deleteTaskByAdmin(taskId) {
+        if(confirm('Are you sure you want to delete this task?')) {
+            fetch(`/api/tasks/${taskId}/delete/`, {
+                method: 'DELETE',
+                headers: {'X-CSRFToken': '{{ csrf_token }}'}
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') { document.getElementById(`admin-task-row-${taskId}`).remove(); }
+            });
+        }
+    }
+</script>
+{% endblock %}
