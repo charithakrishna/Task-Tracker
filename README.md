@@ -27,3 +27,12 @@ git pull
 ```bash
 git push
 ```
+
+# Test User Creds
+
+| Username | Email | Password |
+| :--- | :--- | :--- |
+| chaitanyakumar-inf  | chaitanyakumars@infinite.com  | chaitanya123 |
+| charitha | charitha@infinite.com | charitha123 |
+| Ashiq Shapi | ashiqs@infinite.com  | ashiq123  |
+| admin | admin@infinite.com  | password  |
