@@ -335,16 +335,19 @@ def admin_assign_task(request):
 def admin_update_task(request, task_id):
     if request.method == 'POST' and request.user.is_staff:
         try:
+            # Correctly load the JSON body sent by the fetch call
+            data = json.loads(request.body)
+            
             task = Task.objects.get(id=task_id)
             
-            # Since the frontend sends URLSearchParams, fields are inside request.POST
-            task.title = request.POST.get('title')
-            task.description = request.POST.get('description')
-            task.priority = request.POST.get('priority')
-            task.status = request.POST.get('status')
+            # Extract values from the JSON dictionary
+            task.title = data.get('title')
+            task.description = data.get('description')
+            task.priority = data.get('priority')
+            task.status = data.get('status')
             
-            # Update the worker assignment profile links
-            assigned_user_id = request.POST.get('assigned_to') or request.POST.get('user_id')
+            # Extract and update the assigned employee profile link
+            assigned_user_id = data.get('user_id')
             if assigned_user_id:
                 task.assigned_to = User.objects.get(id=assigned_user_id)
                 
