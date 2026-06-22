@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Create Account{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block layout_container %}
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
@@ -15,46 +15,54 @@
     </div>
 </div>
 
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center p-0" style="background: linear-gradient(135deg, #0d6efd 0%, #0a4ebd 100%); font-family: 'Inter', sans-serif;">
-    <div class="container my-5 px-3">
-        <div class="row g-0 rounded-4 overflow-hidden shadow-lg bg-white mx-auto" style="max-width: 1100px; min-height: 650px;">
+<div class="p-3 p-md-5 min-vh-100 d-flex align-items-center bg-light" style="background-color: #f8fafc !important; font-family: 'Inter', sans-serif;">
+    <div class="container">
+        <div class="row overflow-hidden shadow-sm mx-auto bg-white border" style="max-width: 1050px; min-height: 650px; border-radius: 20px; border-color: #e2e8f0 !important;">
             
-            <div class="col-lg-4 d-none d-lg-flex flex-column justify-content-between p-5 text-white position-relative" style="background: linear-gradient(180deg, #1572e8 0%, #06409f 100%);">
-                <div class="my-auto">
-                    <div class="bg-white bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 54px; height: 54px;">
-                        <i class="bi bi-person-plus-fill fs-3 text-white"></i>
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-5 text-dark position-relative bg-light border-end" style="border-color: #e2e8f0 !important;">
+                <div>
+                    <span class="fs-4 fw-bold d-flex align-items-center gap-2 tracking-tight text-primary" style="color: #1d4ed8 !important;">
+                        <i class="bi bi-box-fill"></i> TaskTracker
+                    </span>
+                </div>
+                <div class="my-auto pe-3">
+                    <div class="bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 54px; height: 54px;">
+                        <i class="bi bi-person-plus-fill fs-3 text-primary" style="color: #1d4ed8 !important;"></i>
                     </div>
-                    <h1 class="fw-bold tracking-tight mb-3" style="font-size: 2.2rem; line-height: 1.2;">Create Access<br>Credentials</h1>
-                    <p class="text-white text-opacity-75 small mb-5">Register your profile inside the system directory</p>
+                    <h1 class="display-6 fw-bold mb-3 text-dark" style="letter-spacing: -1.5px; line-height: 1.2;">Create your account.</h1>
+                    <p class="text-muted fs-6 fw-normal">Join the workspace, organize your workflows, and collaborate with your team seamlessly.</p>
+                </div>
+                <div class="small text-muted opacity-75">
+                    &copy; 2026 TaskTracker Enterprise Platform.
                 </div>
             </div>
 
-            <div class="col-lg-8 bg-white p-4 p-md-5 d-flex flex-column justify-content-center">
-                <div class="mb-4">
-                    <h2 class="fw-bold text-dark mb-1">Create Access Credentials</h2>
-                    <p class="text-muted small">Register your profile inside the system directory</p>
+            <div class="col-lg-7 bg-white p-4 p-md-5 d-flex flex-column justify-content-center">
+                <div class="text-center text-lg-start mb-4">
+                    <h2 class="fw-bold text-dark tracking-tight mb-1">Employee Registration</h2>
+                    <p class="text-muted small">Fill out your profile details to sign up</p>
                 </div>
 
                 <form id="registrationForm" method="POST" action="">
                     {% csrf_token %}
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label text-dark fw-semibold small mb-1">First Name</label>
-                            <input type="text" name="first_name" class="form-control bg-light border-secondary border-opacity-20 py-2" placeholder="Jane" required>
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">First Name</label>
+                            <input type="text" name="first_name" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="Jane" required style="border-color: #cbd5e1; font-size: 14px;">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-dark fw-semibold small mb-1">Last Name</label>
-                            <input type="text" name="last_name" class="form-control bg-light border-secondary border-opacity-20 py-2" placeholder="Doe" required>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label text-dark fw-semibold small mb-1">Employee ID (Unique)</label>
-                            <input type="text" name="employee_id" class="form-control bg-light border-secondary border-opacity-20 py-2" placeholder="EMP-12345" required>
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Last Name</label>
+                            <input type="text" name="last_name" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="Doe" required style="border-color: #cbd5e1; font-size: 14px;">
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label text-dark fw-semibold small mb-1">Corporate Role</label>
-                            <select name="role" class="form-select bg-light border-secondary border-opacity-20 py-2" required>
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Employee ID (Unique)</label>
+                            <input type="text" name="employee_id" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="EMP-12345" required style="border-color: #cbd5e1; font-size: 14px;">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Role</label>
+                            <select name="role" class="form-select bg-light border-secondary border-opacity-20 py-2.5" required style="border-color: #cbd5e1; font-size: 14px;">
                                 <option value="DEVELOPER">Developer</option>
                                 <option value="DESIGNER">Designer</option>
                                 <option value="MANAGER">Project Manager</option>
@@ -64,43 +72,42 @@
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label text-dark fw-semibold small mb-1">Corporate Email</label>
-                            <input type="email" name="email" class="form-control bg-light border-secondary border-opacity-20 py-2" placeholder="jane.doe@company.com" required autocomplete="email">
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Corporate Email</label>
+                            <input type="email" name="email" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="jane.doe@company.com" required autocomplete="email" style="border-color: #cbd5e1; font-size: 14px;">
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label text-dark fw-semibold small mb-1">Phone Number</label>
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Phone Number</label>
                             <div class="input-group">
-                                <select id="countryCode" class="form-select bg-light border-secondary border-opacity-20 py-2" style="max-width: 120px;" required>
+                                <select id="countryCode" class="form-select bg-light border-secondary border-opacity-20 py-2.5" style="max-width: 110px; border-color: #cbd5e1; font-size: 14px;" required>
                                     <option value="+1">+1 (US)</option>
                                     <option value="+44">+44 (UK)</option>
                                     <option value="+91" selected>+91 (IN)</option>
                                     <option value="+61">+61 (AU)</option>
                                     <option value="+49">+49 (DE)</option>
                                 </select>
-                                <input type="tel" id="purePhoneNumber" class="form-control bg-light border-secondary border-opacity-20 py-2" placeholder="9876543210" required>
+                                <input type="tel" id="purePhoneNumber" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="9876543210" required style="border-color: #cbd5e1; font-size: 14px;">
                             </div>
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label text-dark fw-semibold small mb-1">Terminal Access Key</label>
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Password</label>
                             <div class="input-group">
-                                <input type="password" id="registrationPassword" class="form-control bg-light border-secondary border-opacity-20 py-2" placeholder="••••••••••" required autocomplete="new-password">
-                                <button type="button" class="btn btn-outline-secondary border-secondary border-opacity-20" onclick="togglePasswordVisibility()"><i class="bi bi-eye" id="passwordToggleIcon"></i></button>
+                                <span class="input-group-text bg-light border-end-0 text-muted px-3" style="border-color: #cbd5e1;"><i class="bi bi-lock"></i></span>
+                                <input type="password" id="registrationPassword" class="form-control bg-light border-start-0 ps-0 py-2.5" placeholder="Enter your password" required autocomplete="new-password" style="border-color: #cbd5e1; font-size: 14px; border-radius: 0 0.375rem 0.375rem 0;">
+                                <button type="button" class="btn btn-outline-secondary border-secondary border-opacity-20 px-3" onclick="togglePasswordVisibility()" style="border-color: #cbd5e1 !important;"><i class="bi bi-eye" id="passwordToggleIcon"></i></button>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-3 fw-bold shadow-sm border-0 d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-send-fill small"></i> Confirm Registration Signature
-                        </button>
+                        <button type="submit" class="btn btn-primary w-100 py-2.5 shadow-sm mb-4 fw-semibold rounded-3" style="background-color: #1d4ed8; border-color: #1d4ed8;">Register Account</button>
                     </div>
                 </form>
 
-                <div class="text-center mt-4">
-                    <span class="text-muted small">Already have access?</span>
-                    <a href="{% url 'employee_login' %}" class="text-primary fw-semibold small text-decoration-none ms-1">Access node here →</a>
+                <div class="text-center text-lg-start">
+                    <span class="text-muted small">Already have an account?</span>
+                    <a href="{% url 'employee_login' %}" class="text-primary fw-bold text-decoration-none small ms-1">Log in here →</a>
                 </div>
             </div>
         </div>
@@ -110,7 +117,6 @@
 
 {% block scripts %}
 <script>
-    // Global notification engine utilizing Bootstrap Toasts
     function showToast(message, type = 'success') {
         const toastEl = document.getElementById('liveToast');
         const toastMessage = document.getElementById('toastMessage');
@@ -151,16 +157,15 @@
         e.preventDefault();
         
         const submitButton = this.querySelector('button[type="submit"]');
-        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Confirming...';
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Creating Account...';
         submitButton.disabled = true;
 
-        // Combine country code with phone entry field elements
         const fullPhone = document.getElementById('countryCode').value + ' ' + document.getElementById('purePhoneNumber').value.trim();
 
         const formData = {
             first_name: document.querySelector('input[name="first_name"]').value.trim(),
             last_name: document.querySelector('input[name="last_name"]').value.trim(),
-            username: document.querySelector('input[name="employee_id"]').value.trim(), // Corrected key to map value to username
+            username: document.querySelector('input[name="employee_id"]').value.trim(), 
             role: document.querySelector('select[name="role"]').value,
             email: document.querySelector('input[name="email"]').value.trim(),
             phone_number: fullPhone,
@@ -183,15 +188,15 @@
                     window.location.href = data.redirect_url || "{% url 'employee_login' %}";
                 }, 1500);
             } else {
-                showToast(data.error, 'danger'); // Toast used instead of native browser alert
-                submitButton.innerHTML = '<i class="bi bi-send-fill small"></i> Confirm Registration Signature';
+                showToast(data.error, 'danger'); 
+                submitButton.innerHTML = 'Register Account';
                 submitButton.disabled = false;
             }
         })
         .catch(err => {
             console.error(err);
-            showToast('A network execution error occurred.', 'danger');
-            submitButton.innerHTML = '<i class="bi bi-send-fill small"></i> Confirm Registration Signature';
+            showToast('A network error occurred.', 'danger');
+            submitButton.innerHTML = 'Register Account';
             submitButton.disabled = false;
         });
     });

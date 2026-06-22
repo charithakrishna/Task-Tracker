@@ -180,7 +180,6 @@ def reset_password(request):
                     return JsonResponse({'error': 'No profile matches the provided credential.'}, status=404)
                 
                 # FIX: Access the related profile from tracker_app_profile
-                # Django models typically allow reaching the profile via 'profile' or your model name lowercase
                 user_profile = getattr(user, 'profile', None)
                 
                 if not user_profile:
@@ -248,8 +247,9 @@ def admin_dashboard(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
         
-    # Correctly pulls all User records containing the injected .first_name and .last_name parameters
-    employees = User.objects.filter(is_staff=False)
+    # Modified to include all workers. Since the create form marks created accounts as staff/managers, 
+    # we filter out superusers only so that employee lists render correctly.
+    employees = User.objects.filter(is_superuser=False)
     all_tasks = Task.objects.all()
     
     return render(request, 'admin_portal/dashboard.html', {
@@ -271,9 +271,23 @@ def admin_create_user(request):
             password = data.get('password')
             first_name = data.get('first_name', '')
             last_name = data.get('last_name', '')
-            is_staff_member = data.get('is_staff', True) # Defaults to true if omitted
+            phone_number = data.get('phone_number', '').strip()
+            role = data.get('role', '').strip() # Extracted role field matching employee_register
+            is_staff_member = data.get('is_staff', False) 
             
-            # 2. Instantiate user object with structural name fields
+            # Verification check including the new role field
+            if not all([username, email, password, first_name, last_name, phone_number, role]):
+                return JsonResponse({'error': 'All fields (including role) are strictly required.'}, status=400)
+
+            # Check database duplicate constraints
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'User with this employee ID already exists.'}, status=400)
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({'error': 'User with this email already exists.'}, status=400)
+            if phone_number and Profile.objects.filter(phone_number=phone_number).exists():
+                return JsonResponse({'error': 'User with this phone number already exists.'}, status=400)
+            
+            # 2. Instantiate user object
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -281,7 +295,16 @@ def admin_create_user(request):
                 first_name=first_name,
                 last_name=last_name
             )
+            user.is_staff = is_staff_member
             user.save()
+            
+            # 3. Save profile using the dynamically assigned role field
+            profile = Profile.objects.create(
+                user=user,
+                phone_number=phone_number,
+                role=role # Directly mapping the selected/entered role
+            )
+            profile.save()
             
             return JsonResponse({'status': 'success'})
             

@@ -35,15 +35,28 @@
     </nav>
 
     <div class="container px-3 px-md-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
                 <h3 class="fw-bold text-dark mb-1">Admin Panel</h3>
-                <p class="text-muted small mb-0">Create new accounts and assign tasks to employees below.</p>
+                <p class="text-muted small mb-0">Manage work distribution channels, establish infrastructure roles, and audit operational rosters.</p>
             </div>
             <button class="btn btn-outline-primary btn-sm ui-pill-btn px-4 py-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#createUserCollapse">
                 <i class="bi bi-person-add me-1"></i> Create Employee Account
             </button>
         </div>
+
+        <ul class="nav nav-pills gap-2 border-bottom pb-3 mb-5" id="dashboardTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold small ui-pill-btn px-4 py-2" id="operations-tab" data-bs-toggle="pill" data-bs-target="#operationsPane" type="button" role="tab" aria-controls="operationsPane" aria-selected="true">
+                    <i class="bi bi-grid-1x2-fill me-2"></i>Operations Console
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold small ui-pill-btn px-4 py-2" id="users-tab" data-bs-toggle="pill" data-bs-target="#usersPane" type="button" role="tab" aria-controls="usersPane" aria-selected="false">
+                    <i class="bi bi-people-fill me-2"></i>Registered Employees ({{ employees|length }})
+                </button>
+            </li>
+        </ul>
 
         <div class="collapse mb-5" id="createUserCollapse">
             <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4">
@@ -58,12 +71,37 @@
                         <input type="text" id="new_last_name" class="form-control" placeholder="Enter last name..." required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted fw-bold">Employee ID</label>
+                        <label class="form-label small text-muted fw-bold">Employee ID / Username</label>
                         <input type="text" id="new_employee_id" class="form-control" placeholder="Enter employee ID..." required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Email Address</label>
                         <input type="email" id="new_email" class="form-control" placeholder="Enter email address..." required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">Mobile Phone Number</label>
+                        <div class="input-group">
+                            <select id="new_phone_code" class="form-select" style="max-width: 110px;">
+                                <option value="+1">+1 (US)</option>
+                                <option value="+91" selected>+91 (IN)</option>
+                                <option value="+44">+44 (UK)</option>
+                                <option value="+61">+61 (AU)</option>
+                                <option value="+81">+81 (JP)</option>
+                                <option value="+49">+49 (DE)</option>
+                                <option value="+33">+33 (FR)</option>
+                            </select>
+                            <input type="tel" id="new_phone_number" class="form-control" placeholder="e.g., 9876543210" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">Track Assignment / Role</label>
+                        <select id="new_role" class="form-select" required>
+                            <option value="" disabled selected>-- Select Operational Role Track --</option>
+                            <option value="Software Engineer Track">Software Engineer Track</option>
+                            <option value="Quality Assurance Track">Quality Assurance Track</option>
+                            <option value="Product Management Track">Product Management Track</option>
+                            <option value="Data Operations Track">Data Operations Track</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Password</label>
@@ -80,107 +118,196 @@
             </div>
         </div>
 
-        <div class="row g-4 mb-5">
-            <div class="col-lg-5">
-                <div class="dashboard-metric-card shadow-sm p-4 border h-100">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-send-plus-fill me-2 text-primary"></i>Assign a New Task</h5>
-                    
-                    <div id="validationWarningCard" class="alert alert-danger border-danger border-opacity-20 rounded-3 d-none mb-4 p-3 shadow-sm animate-fade-in">
-                        <div class="d-flex align-items-center gap-2 fw-semibold text-danger small">
-                            <i class="bi bi-exclamation-triangle-fill fs-6"></i>
-                            <span>Required operational entries are missing. Please complete the highlighted fields.</span>
+        <div class="tab-content" id="dashboardTabsContent">
+            
+            <div class="tab-pane fade show active animate-fade-in" id="operationsPane" role="tabpanel" aria-labelledby="operations-tab">
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-5">
+                        <div class="dashboard-metric-card shadow-sm p-4 border h-100">
+                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-send-plus-fill me-2 text-primary"></i>Assign a New Task</h5>
+                            
+                            <div id="validationWarningCard" class="alert alert-danger border-danger border-opacity-20 rounded-3 d-none mb-4 p-3 shadow-sm animate-fade-in">
+                                <div class="d-flex align-items-center gap-2 fw-semibold text-danger small">
+                                    <i class="bi bi-exclamation-triangle-fill fs-6"></i>
+                                    <span>Required operational entries are missing. Please complete the highlighted fields.</span>
+                                </div>
+                            </div>
+
+                            <form id="assignTaskForm" novalidate>
+                                <div class="mb-4">
+                                    <label class="form-label text-muted small fw-semibold">Task Title <span class="text-danger fw-bold">*</span></label>
+                                    <input type="text" id="task_title" class="form-control bg-light border py-2.5 rounded-3" placeholder="What needs to be done?" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
+                                    <textarea id="task_desc" class="form-control bg-light border rounded-3" rows="4" placeholder="Add additional details or notes here..."></textarea>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label text-muted small fw-semibold">Assign To <span class="text-danger fw-bold">*</span></label>
+                                    <select id="task_user" class="form-select bg-light border py-2.5 rounded-3" required>
+                                        <option value="">-- Choose an employee --</option>
+                                        {% for employee in employees %}
+                                            <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-5">
+                                    <label class="form-label text-muted small fw-semibold d-block mb-3">Set Priority <span class="text-danger fw-bold">*</span></label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
+                                        <label class="btn btn-outline-danger py-2.5 fw-semibold small" for="btn_high">High</label>
+
+                                        <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
+                                        <label class="btn btn-outline-warning py-2.5 fw-semibold small" for="btn_medium">Medium</label>
+
+                                        <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
+                                        <label class="btn btn-outline-info py-2.5 fw-semibold small" for="btn_low">Low</label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-dark w-100 py-3 ui-pill-btn fw-bold shadow-sm">Assign Task</button>
+                            </form>
                         </div>
                     </div>
 
-                    <form id="assignTaskForm" novalidate>
-                        <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold">Task Title <span class="text-danger fw-bold">*</span></label>
-                            <input type="text" id="task_title" class="form-control bg-light border py-2.5 rounded-3" placeholder="What needs to be done?" required>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
-                            <textarea id="task_desc" class="form-control bg-light border border-0 rounded-3" rows="4" placeholder="Add additional details or notes here..."></textarea>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label text-muted small fw-semibold">Assign To <span class="text-danger fw-bold">*</span></label>
-                            <select id="task_user" class="form-select bg-light border py-2.5 rounded-3" required>
-                                <option value="">-- Choose an employee --</option>
-                                {% for employee in employees %}
-                                    <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        
-                        <div class="mb-5">
-                            <label class="form-label text-muted small fw-semibold d-block mb-3">Set Priority <span class="text-danger fw-bold">*</span></label>
-                            <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
-                                <label class="btn btn-outline-danger py-2.5 fw-semibold small" for="btn_high">High</label>
-
-                                <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
-                                <label class="btn btn-outline-warning py-2.5 fw-semibold small" for="btn_medium">Medium</label>
-
-                                <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
-                                <label class="btn btn-outline-info py-2.5 fw-semibold small" for="btn_low">Low</label>
+                    <div class="col-lg-7">
+                        <div class="dashboard-metric-card shadow-sm p-4 border h-100">
+                            <h5 class="fw-bold text-dark mb-4"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 10px;">
+                                    <thead>
+                                        <tr class="text-muted small text-uppercase">
+                                            <th class="border-0 pb-2 ps-3">Task Details</th>
+                                            <th class="border-0 pb-2">Assigned To</th>
+                                            <th class="border-0 pb-2">Priority</th>
+                                            <th class="border-0 pb-2">Status</th>
+                                            <th class="border-0 pb-2 text-center pe-3">Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if all_tasks %}
+                                            {% for task in all_tasks %}
+                                            <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm">
+                                                <td class="text-wrap ps-3 py-3 rounded-start-3" style="max-width: 160px;">
+                                                    <span class="fw-bold text-dark mb-0 d-block">{{ task.title }}</span>
+                                                    <small class="text-muted d-block text-truncate">{{ task.description }}</small>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="badge bg-white text-dark border rounded-3 px-2 py-1.5">
+                                                        <i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                        {{ task.get_priority_display }}
+                                                    </span>
+                                                </td>
+                                                <td class="py-3">
+                                                    <span class="badge {% if task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                        {{ task.get_status_display }}
+                                                    </span>
+                                                </td>
+                                                <td class="text-center py-3 pe-3 rounded-end-3">
+                                                    <button class="btn btn-link link-danger p-0 border-0 shadow-none" onclick="deleteTaskByAdmin('{{ task.id }}')"><i class="bi bi-trash3 fs-5"></i></button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-dark w-100 py-3 ui-pill-btn fw-bold shadow-sm">Assign Task</button>
-                    </form>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-7">
-                <div class="dashboard-metric-card shadow-sm p-4 border h-100">
-                    <h5 class="fw-bold text-dark mb-4"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
+            <div class="tab-pane fade animate-fade-in" id="usersPane" role="tabpanel" aria-labelledby="users-tab">
+                <div class="dashboard-metric-card shadow-sm p-4 border mb-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                        <h5 class="fw-bold text-dark m-0"><i class="bi bi-shield-lock-fill me-2 text-danger"></i>Roster Personnel Log</h5>
+                        <span class="badge bg-dark px-3 py-2 ui-pill-btn fw-semibold small">Active Roster Security Node</span>
+                    </div>
+                    
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 10px;">
+                        <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 12px;">
                             <thead>
-                                <tr class="text-muted small text-uppercase">
-                                    <th class="border-0 pb-2 ps-3">Task Details</th>
-                                    <th class="border-0 pb-2">Assigned To</th>
-                                    <th class="border-0 pb-2">Priority</th>
-                                    <th class="border-0 pb-2">Status</th>
-                                    <th class="border-0 pb-2 text-center pe-3">Remove</th>
+                                <tr class="text-muted small text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">
+                                    <th class="border-0 pb-2 ps-3">Employee Profile</th>
+                                    <th class="border-0 pb-2">Employee ID / Code</th>
+                                    <th class="border-0 pb-2">Corporate Email Address</th>
+                                    <th class="border-0 pb-2">Mobile Phone</th>
+                                    <th class="border-0 pb-2">Track Assignment</th>
+                                    <th class="border-0 pb-2 text-center pe-3">Infrastructure Role</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% if all_tasks %}
-                                    {% for task in all_tasks %}
-                                    <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm">
-                                        <td class="text-wrap ps-3 py-3 rounded-start-3" style="max-width: 160px;">
-                                            <span class="fw-bold text-dark mb-0 d-block">{{ task.title }}</span>
-                                            <small class="text-muted d-block text-truncate">{{ task.description }}</small>
+                                {% if employees %}
+                                    {% for emp in employees %}
+                                    <tr class="bg-light rounded-3 shadow-sm">
+                                        <td class="ps-3 py-3 rounded-start-3">
+                                            <div class="d-flex align-items-center gap-2.5">
+                                                <div class="bg-secondary text-white fw-bold rounded-circle d-flex align-items-center justify-content-center small shadow-sm roster-avatar" data-name="{{ emp.first_name }} {{ emp.last_name }}" style="width: 35px; height: 35px; font-size: 12px;">
+                                                    {{ emp.first_name|slice:":1" }}{{ emp.last_name|slice:":1" }}
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold text-dark d-block lh-sm mb-0">{{ emp.first_name }} {{ emp.last_name }}</span>
+                                                    <small class="text-muted" style="font-size: 11px;">Joined: {{ emp.date_joined|date:"M d, Y"|default:"Recent" }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 font-monospace fw-semibold text-primary" style="font-size: 13px;">
+                                            {{ emp.username }}
                                         </td>
                                         <td class="py-3">
-                                            <span class="badge bg-white text-dark border rounded-3 px-2 py-1.5">
-                                                <i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
-                                            </span>
+                                            <a href="mailto:{{ emp.email }}" class="text-decoration-none text-dark fw-medium small d-flex align-items-center gap-1.5">
+                                                <i class="bi bi-envelope text-muted"></i>{{ emp.email }}
+                                            </a>
+                                        </td>
+                                        <td class="py-3 small text-muted font-monospace">
+                                            {% if emp.phone_number %}
+                                                <i class="bi bi-telephone me-1"></i>{{ emp.phone_number }}
+                                            {% elif emp.profile and emp.profile.phone_number %}
+                                                <i class="bi bi-telephone me-1"></i>{{ emp.profile.phone_number }}
+                                            {% else %}
+                                                <span class="text-muted opacity-50 font-sans-serif text-italic small">Not Registered</span>
+                                            {% endif %}
                                         </td>
                                         <td class="py-3">
-                                            <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2 py-1.5 rounded-3">
-                                                {{ task.get_priority_display }}
-                                            </span>
-                                        </td>
-                                        <td class="py-3">
-                                            <span class="badge {% if task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-2 py-1.5 rounded-3">
-                                                {{ task.get_status_display }}
+                                            <span class="badge bg-white text-dark border border-opacity-70 px-2.5 py-1.5 rounded-3 font-sans-serif small">
+                                                <i class="bi bi-briefcase text-muted me-1"></i>
+                                                {% if emp.role %}
+                                                    {{ emp.role }}
+                                                {% elif emp.profile and emp.profile.role %}
+                                                    {{ emp.profile.role }}
+                                                {% else %}
+                                                    Software Engineer Track
+                                                {% endif %}
                                             </span>
                                         </td>
                                         <td class="text-center py-3 pe-3 rounded-end-3">
-                                            <button class="btn btn-link link-danger p-0 border-0 shadow-none" onclick="deleteTaskByAdmin('{{ task.id }}')"><i class="bi bi-trash3 fs-5"></i></button>
+                                            {% if emp.is_superuser %}
+                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 px-3 py-1.5 rounded-pill fw-bold small">Roster Admin</span>
+                                            {% elif emp.is_staff %}
+                                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-20 px-3 py-1.5 rounded-pill fw-semibold small">Staff Manager</span>
+                                            {% else %}
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-1.5 rounded-pill fw-medium small">Personnel Core</span>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 {% else %}
-                                    <tr><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
+                                    <tr><td colspan="6" class="text-center text-muted py-5 rounded-3 bg-light border">No operational workforce data exists inside database registry pools.</td></tr>
                                 {% endif %}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -198,12 +325,27 @@
     .animate-fade-in {
         animation: fadeIn 0.2s ease-out forwards;
     }
+    #dashboardTabs .nav-link {
+        color: #475569;
+        background-color: transparent;
+        border: 1px solid transparent;
+        transition: all 0.2s ease-in-out;
+    }
+    #dashboardTabs .nav-link.active {
+        color: #ffffff !important;
+        background-color: #0d6efd !important;
+        box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.2), 0 2px 4px -1px rgba(13, 110, 253, 0.1);
+    }
+    #dashboardTabs .nav-link:hover:not(.active) {
+        background-color: #f1f5f9;
+        color: #0f172a;
+    }
+    .gap-2.5 { gap: 0.65rem !important; }
 </style>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Global notification engine utilizing Bootstrap Toasts
     function showToast(message, type = 'success') {
         const toastEl = document.getElementById('liveToast');
         const toastMessage = document.getElementById('toastMessage');
@@ -229,8 +371,7 @@
     }
 
     (function generateAdminAvatar() {
-        // FIX: Changed request.user.employee_id to request.user.username
-        const nameStr = "{{ request.user.username }}";
+        const nameStr = "{{ request.user.username|escapejs }}";
         const blocks = nameStr.trim().split(/\s+/);
         let initials = "";
         if (blocks.length > 1) {
@@ -241,7 +382,15 @@
         const palette = ['#1e293b', '#475569', '#334155'];
         const randomColor = palette[Math.floor(Math.random() * palette.length)];
         const avatarNode = document.getElementById('adminAvatarNode');
-        if(avatarNode) { avatarNode.innerText = initials; avatarNode.style.backgroundColor = randomColor; }
+        if(avatarNode) { avatarNode.innerText = initials || "A"; avatarNode.style.backgroundColor = randomColor; }
+    })();
+
+    (function mapEmployeeAvatarPalettes() {
+        const structuralPalettes = ['#0d6efd', '#198754', '#dc3545', '#0dcaf0', '#6f42c1', '#fd7e14', '#343a40'];
+        document.querySelectorAll('.roster-avatar').forEach((avatar, index) => {
+            const signatureIndex = index % structuralPalettes.length;
+            avatar.style.backgroundColor = structuralPalettes[signatureIndex];
+        });
     })();
 
     document.getElementById('createUserForm').addEventListener('submit', function(e) {
@@ -255,6 +404,10 @@
             return;
         }
 
+        const phoneCode = document.getElementById('new_phone_code').value;
+        const rawPhoneNum = document.getElementById('new_phone_number').value.trim();
+        const fullPhoneNumber = rawPhoneNum ? (phoneCode + rawPhoneNum) : "";
+
         fetch("{% url 'admin_create_user' %}", {
             method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
@@ -263,8 +416,10 @@
                 last_name: document.getElementById('new_last_name').value.trim(),
                 username: document.getElementById('new_employee_id').value.trim(), 
                 email: document.getElementById('new_email').value.trim(),
+                phone_number: fullPhoneNumber,
+                role: document.getElementById('new_role').value, 
                 password: password,
-                is_staff: true 
+                is_staff: false 
             })
         })
         .then(res => res.json())
@@ -367,9 +522,16 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === 'success') { 
-                    document.getElementById(`admin-task-row-${taskId}`).remove();
+                    const row = document.getElementById(`admin-task-row-${taskId}`);
+                    if(row) row.remove();
                     showToast('Assigned log entry removed.');
+                } else {
+                    showToast(data.error || 'Failed to remove the entry.', 'danger');
                 }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('A network execution error occurred.', 'danger');
             });
         }
     }

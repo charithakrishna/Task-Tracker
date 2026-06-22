@@ -1,71 +1,63 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Access Control - TaskTracker{% endblock %}
+{% block title %}Admin{% endblock %}
 
 {% block layout_container %}
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
-    <div id="liveToast" class="toast align-items-center text-white border-0 rounded-3 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body d-flex align-items-center gap-2 fw-semibold">
-                <i id="toastIcon" class="bi fs-5"></i>
-                <span id="toastMessage"></span>
-            </div>
-            <button type="button" class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
-
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center p-0" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); font-family: 'Inter', sans-serif;">
-    <div class="container my-5 px-3">
-        <div class="row g-0 rounded-4 overflow-hidden shadow-lg bg-white mx-auto" style="max-width: 1100px; min-height: 600px;">
+<div class="p-3 p-md-5 min-vh-100 d-flex align-items-center bg-light" style="background-color: #f8fafc !important; font-family: 'Inter', sans-serif;">
+    <div class="container">
+        <div class="row overflow-hidden shadow-sm mx-auto bg-white border" style="max-width: 1050px; min-height: 600px; border-radius: 20px; border-color: #e2e8f0 !important;">
             
-            <div class="col-lg-4 d-none d-lg-flex flex-column justify-content-between p-5 text-white position-relative" style="background: linear-gradient(180deg, #334155 0%, #1e293b 100%);">
-                <div class="my-auto">
-                    <div class="bg-white bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 54px; height: 54px;">
-                        <i class="bi bi-shield-lock-fill fs-3 text-danger"></i>
+            <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-5 text-dark position-relative bg-light border-end" style="border-color: #e2e8f0 !important;">
+                <div>
+                    <span class="fs-4 fw-bold d-flex align-items-center gap-2 tracking-tight text-primary" style="color: #1d4ed8 !important;">
+                        <i class="bi bi-box-fill"></i> TaskTracker
+                    </span>
+                </div>
+                <div class="my-auto pe-3">
+                    <div class="bg-primary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center mb-4" style="width: 54px; height: 54px;">
+                        <i class="bi bi-shield-lock-fill fs-3 text-primary" style="color: #1d4ed8 !important;"></i>
                     </div>
-                    <h1 class="fw-bold tracking-tight mb-3" style="font-size: 2.2rem; line-height: 1.2;">Elevated<br>Authority</h1>
-                    <p class="text-white text-opacity-75 small mb-5">Authorized administrative infrastructure control node.</p>
+                    <h1 class="display-6 fw-bold mb-3 text-dark" style="letter-spacing: -1.5px; line-height: 1.2;">Admin<br>Portal</h1>
+                    <p class="text-muted fs-6 fw-normal">Secure management access for system administrators.</p>
+                </div>
+                <div class="small text-muted opacity-75">
+                    &copy; 2026 TaskTracker Enterprise Platform.
                 </div>
             </div>
 
-            <div class="col-lg-8 bg-white p-4 p-md-5 d-flex flex-column justify-content-center">
-                <div class="mb-4">
-                    <h2 class="fw-bold text-dark mb-1">Admin Portal</h2>
-                    <p class="text-muted small">Initialize secure administrative session</p>
+            <div class="col-lg-7 bg-white p-4 p-md-5 d-flex flex-column justify-content-center">
+                <div class="text-center text-lg-start mb-4">
+                    <h2 class="fw-bold text-dark tracking-tight mb-1">Admin Sign In</h2>
+                    <p class="text-muted small">Sign in to continue.</p>
                 </div>
 
                 <form method="POST" action="{% url 'admin_login' %}" id="adminLoginForm">
                     {% csrf_token %}
                     
                     <div class="mb-3">
-                        <label class="form-label text-dark fw-semibold small mb-1">Admin Username</label>
-                        <input type="text" name="username" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="Enter username..." required autocomplete="username">
+                        <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-1" style="font-size: 11px;">Username</label>
+                        <input type="text" name="username" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="Enter username" required autocomplete="username" style="border-color: #cbd5e1; font-size: 14px;">
                     </div>
 
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label class="form-label text-dark fw-semibold small mb-0">Master Password</label>
-                            <a href="{% url 'reset_password' %}" class="text-danger small text-decoration-none">Forgot Password?</a>
+                            <label class="form-label text-secondary small fw-semibold text-uppercase tracking-wider mb-0" style="font-size: 11px;">Password</label>
+                            <a href="{% url 'reset_password' %}" class="text-primary small text-decoration-none fw-semibold">Forgot Password?</a>
                         </div>
                         <div class="input-group">
-                            <input type="password" name="password" id="adminPassword" class="form-control bg-light border-secondary border-opacity-20 py-2.5" placeholder="••••••••••" required autocomplete="current-password">
-                            <button type="button" class="btn btn-outline-secondary border-secondary border-opacity-20" onclick="togglePasswordVisibility()"><i class="bi bi-eye" id="passwordToggleIcon"></i></button>
+                            <span class="input-group-text bg-light border-end-0 text-muted px-3" style="border-color: #cbd5e1;"><i class="bi bi-lock"></i></span>
+                            <input type="password" name="password" id="adminPassword" class="form-control bg-light border-start-0 ps-0 py-2.5" placeholder="••••••••••" required autocomplete="current-password" style="border-color: #cbd5e1; font-size: 14px; border-radius: 0 0.375rem 0.375rem 0;">
+                            <button type="button" class="btn btn-outline-secondary border-secondary border-opacity-20 px-3" onclick="togglePasswordVisibility()" style="border-color: #cbd5e1 !important;"><i class="bi bi-eye" id="passwordToggleIcon"></i></button>
                         </div>
                     </div>
 
-                    <div>
-                        <button type="submit" class="btn btn-dark w-100 py-2.5 rounded-3 fw-bold shadow-sm border-0 d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-shield-fill-check small"></i> Initialize Admin Session
-                        </button>
-                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 shadow-sm mb-4 fw-semibold rounded-3" style="background-color: #1d4ed8; border-color: #1d4ed8;">Sign In</button>
                 </form>
 
-                <div class="text-center mt-4">
-                    <a href="{% url 'employee_login' %}" class="text-secondary fw-semibold small text-decoration-none">← Return to standard Employee Login</a>
+                <div class="text-center text-lg-start">
+                    <a href="{% url 'employee_login' %}" class="text-secondary fw-semibold small text-decoration-none">← Return to Employee Login</a>
                 </div>
             </div>
-            
         </div>
     </div>
 </div>
@@ -73,31 +65,6 @@
 
 {% block scripts %}
 <script>
-    // Global notification engine utilizing Bootstrap Toasts
-    function showToast(message, type = 'success') {
-        const toastEl = document.getElementById('liveToast');
-        const toastMessage = document.getElementById('toastMessage');
-        const toastIcon = document.getElementById('toastIcon');
-        
-        toastMessage.innerText = message;
-        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning');
-        toastIcon.classList.remove('bi-check-circle-fill', 'bi-exclamation-triangle-fill', 'bi-info-circle-fill');
-
-        if (type === 'success') {
-            toastEl.classList.add('bg-success');
-            toastIcon.classList.add('bi-check-circle-fill');
-        } else if (type === 'danger') {
-            toastEl.classList.add('bg-danger');
-            toastIcon.classList.add('bi-exclamation-triangle-fill');
-        } else {
-            toastEl.classList.add('bg-warning', 'text-dark');
-            toastIcon.classList.add('bi-info-circle-fill');
-        }
-
-        const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
-        toast.show();
-    }
-
     function togglePasswordVisibility() {
         const passwordField = document.getElementById('adminPassword');
         const toggleIcon = document.getElementById('passwordToggleIcon');
@@ -109,14 +76,5 @@
             toggleIcon.className = 'bi bi-eye';
         }
     }
-
-    // Capture backend errors passed through Django's message framework
-    document.addEventListener("DOMContentLoaded", function() {
-        {% if messages %}
-            {% for message in messages %}
-                showToast("{{ message }}", "danger");
-            {% endfor %}
-        {% endif %}
-    });
 </script>
 {% endblock %}
