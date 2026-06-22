@@ -38,7 +38,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
                 <h3 class="fw-bold text-dark mb-1">Admin Panel</h3>
-                <p class="text-muted small mb-0">Manage tasks, create employee accounts, and view the team roster.</p>
+                <p class="text-muted small mb-0">Manage work distribution channels, establish infrastructure roles, and audit operational rosters.</p>
             </div>
             <button class="btn btn-outline-primary btn-sm ui-pill-btn px-4 py-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#createUserCollapse">
                 <i class="bi bi-person-add me-1"></i> Create Employee Account
@@ -48,19 +48,19 @@
         <ul class="nav nav-pills gap-2 border-bottom pb-3 mb-5" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active fw-semibold small ui-pill-btn px-4 py-2" id="operations-tab" data-bs-toggle="pill" data-bs-target="#operationsPane" type="button" role="tab" aria-controls="operationsPane" aria-selected="true">
-                    <i class="bi bi-grid-1x2-fill me-2"></i>Tasks Dashboard
+                    <i class="bi bi-grid-1x2-fill me-2"></i>Operations Console
                 </button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-semibold small ui-pill-btn px-4 py-2" id="users-tab" data-bs-toggle="pill" data-bs-target="#usersPane" type="button" role="tab" aria-controls="usersPane" aria-selected="false">
-                    <i class="bi bi-people-fill me-2"></i>Employees ({{ employees|length }})
+                    <i class="bi bi-people-fill me-2"></i>Registered Employees ({{ employees|length }})
                 </button>
             </li>
         </ul>
 
         <div class="collapse mb-5" id="createUserCollapse">
             <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4 bg-white rounded-4">
-                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-gear me-2"></i>Create New Account</h5>
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-gear me-2"></i>New Account Form</h5>
                 <form id="createUserForm" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">First Name</label>
@@ -71,7 +71,7 @@
                         <input type="text" id="new_last_name" class="form-control" placeholder="Enter last name..." required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted fw-bold">Username / Employee ID</label>
+                        <label class="form-label small text-muted fw-bold">Employee ID / Username</label>
                         <input type="text" id="new_employee_id" class="form-control" placeholder="Enter employee ID..." required>
                     </div>
                     <div class="col-md-6">
@@ -79,7 +79,7 @@
                         <input type="email" id="new_email" class="form-control" placeholder="Enter email address..." required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted fw-bold">Phone Number</label>
+                        <label class="form-label small text-muted fw-bold">Mobile Phone Number</label>
                         <div class="input-group">
                             <select id="new_phone_code" class="form-select" style="max-width: 110px;">
                                 <option value="+1">+1 (US)</option>
@@ -94,9 +94,9 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted fw-bold">Role / Track</label>
+                        <label class="form-label small text-muted fw-bold">Track Assignment / Role</label>
                         <select id="new_role" class="form-select" required>
-                            <option value="" disabled selected>-- Select Role --</option>
+                            <option value="" disabled selected>-- Select Operational Role Track --</option>
                             <option value="Software Engineer Track">Software Engineer Track</option>
                             <option value="Quality Assurance Track">Quality Assurance Track</option>
                             <option value="Product Management Track">Product Management Track</option>
@@ -112,7 +112,7 @@
                         <input type="password" id="new_password_confirm" class="form-control" placeholder="Repeat password..." required>
                     </div>
                     <div class="col-12 text-end mt-4">
-                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn">Create Account</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn">Save New Account</button>
                     </div>
                 </form>
             </div>
@@ -130,7 +130,7 @@
                             <div id="validationWarningCard" class="alert alert-danger border-danger border-opacity-20 rounded-3 d-none mb-4 p-3 shadow-sm animate-fade-in">
                                 <div class="d-flex align-items-center gap-2 fw-semibold text-danger small">
                                     <i class="bi bi-exclamation-triangle-fill fs-6"></i>
-                                    <span>Please fill in all required fields.</span>
+                                    <span>Required operational entries are missing. Please complete the highlighted fields.</span>
                                 </div>
                             </div>
 
@@ -150,11 +150,11 @@
                                         </select>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label text-muted small fw-semibold">Description <span class="text-muted fw-normal" style="font-size: 11px;">(Optional)</span></label>
-                                        <textarea id="task_desc" class="form-control bg-light border rounded-3" rows="2" placeholder="Add task details here..."></textarea>
+                                        <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
+                                        <textarea id="task_desc" class="form-control bg-light border rounded-3" rows="2" placeholder="Add additional details or notes here..."></textarea>
                                     </div>
                                     <div class="col-md-6 d-flex flex-column justify-content-end">
-                                        <label class="form-label text-muted small fw-semibold d-block mb-2">Priority <span class="text-danger fw-bold">*</span></label>
+                                        <label class="form-label text-muted small fw-semibold d-block mb-2">Set Priority <span class="text-danger fw-bold">*</span></label>
                                         <div class="btn-group w-100" role="group">
                                             <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
                                             <label class="btn btn-outline-danger py-2 fw-semibold small" for="btn_high">High</label>
@@ -179,11 +179,11 @@
                     <div class="col-12 mb-5">
                         <div class="dashboard-metric-card shadow-sm p-4 border bg-white rounded-4">
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                                <h5 class="fw-bold text-dark m-0"><i class="bi bi-layer-forward me-2 text-success"></i>Assigned Tasks</h5>
+                                <h5 class="fw-bold text-dark m-0"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
                                 
                                 <div class="input-group" style="max-width: 350px;">
                                     <span class="input-group-text bg-light border-end-0 text-muted py-2"><i class="bi bi-search"></i></span>
-                                    <input type="text" id="taskSearchInput" class="form-control bg-light border-start-0 py-2 small" placeholder="Search by task name or employee...">
+                                    <input type="text" id="taskSearchInput" class="form-control bg-light border-start-0 py-2 small" placeholder="Search by name, task title...">
                                 </div>
                             </div>
                             
@@ -227,7 +227,7 @@
                                                                 data-bs-toggle="modal" data-bs-target="#viewTaskModal"
                                                                 data-title="{{ task.title }}"
                                                                 data-desc="{{ task.description }}"
-                                                                data-user="{{ task.first_name }} {{ task.last_name }} ({{ task.username }})"
+                                                                data-user="{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})"
                                                                 data-priority="{{ task.get_priority_display }}"
                                                                 data-status="{{ task.get_status_display }}">
                                                             <i class="bi bi-eye fs-5"></i>
@@ -250,11 +250,11 @@
                                             </tr>
                                             {% endfor %}
                                         {% else %}
-                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks found.</td></tr>
+                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
                                         {% endif %}
                                         
                                         <tr id="noResultsMatchRow" class="d-none">
-                                            <td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No matching tasks found.</td>
+                                            <td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No matching task or worker details identified inside log pool.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -268,20 +268,20 @@
             <div class="tab-pane fade animate-fade-in" id="usersPane" role="tabpanel" aria-labelledby="users-tab">
                 <div class="dashboard-metric-card shadow-sm p-4 border mb-5 bg-white rounded-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                        <h5 class="fw-bold text-dark m-0"><i class="bi bi-shield-lock-fill me-2 text-danger"></i>Employee Profiles</h5>
-                        <span class="badge bg-dark px-3 py-2 ui-pill-btn fw-semibold small">Active Staff</span>
+                        <h5 class="fw-bold text-dark m-0"><i class="bi bi-shield-lock-fill me-2 text-danger"></i>Roster Personnel Log</h5>
+                        <span class="badge bg-dark px-3 py-2 ui-pill-btn fw-semibold small">Active Roster Security Node</span>
                     </div>
                     
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 12px;">
                             <thead>
                                 <tr class="text-muted small text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">
-                                    <th class="border-0 pb-2 ps-3">Name</th>
-                                    <th class="border-0 pb-2">Employee ID</th>
-                                    <th class="border-0 pb-2">Email</th>
-                                    <th class="border-0 pb-2">Phone</th>
-                                    <th class="border-0 pb-2">Role / Track</th>
-                                    <th class="border-0 pb-2 text-center pe-3">Account Type</th>
+                                    <th class="border-0 pb-2 ps-3">Employee Profile</th>
+                                    <th class="border-0 pb-2">Employee ID / Code</th>
+                                    <th class="border-0 pb-2">Corporate Email Address</th>
+                                    <th class="border-0 pb-2">Mobile Phone</th>
+                                    <th class="border-0 pb-2">Track Assignment</th>
+                                    <th class="border-0 pb-2 text-center pe-3">Infrastructure Role</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -330,17 +330,17 @@
                                         </td>
                                         <td class="text-center py-3 pe-3 rounded-end-3">
                                             {% if emp.is_superuser %}
-                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 px-3 py-1.5 rounded-pill fw-bold small">Admin</span>
+                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 px-3 py-1.5 rounded-pill fw-bold small">Roster Admin</span>
                                             {% elif emp.is_staff %}
-                                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-20 px-3 py-1.5 rounded-pill fw-semibold small">Manager</span>
+                                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-20 px-3 py-1.5 rounded-pill fw-semibold small">Staff Manager</span>
                                             {% else %}
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-1.5 rounded-pill fw-medium small">Employee</span>
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-1.5 rounded-pill fw-medium small">Personnel Core</span>
                                             {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 {% else %}
-                                    <tr><td colspan="6" class="text-center text-muted py-5 rounded-3 bg-light border">No employees found.</td></tr>
+                                    <tr><td colspan="6" class="text-center text-muted py-5 rounded-3 bg-light border">No operational workforce data exists inside database registry pools.</td></tr>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -356,7 +356,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow rounded-4">
             <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="fw-bold text-dark m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Task Details</h5>
+                <h5 class="fw-bold text-dark m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Task Information Record</h5>
                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
@@ -365,26 +365,26 @@
                     <p id="viewModalTitle" class="fw-bold text-dark mb-0 fs-5"></p>
                 </div>
                 <div class="mb-4">
-                    <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Description</label>
+                    <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Description Criteria</label>
                     <div class="bg-light p-3 rounded-3 text-secondary small text-wrap border" id="viewModalDesc" style="min-height: 60px;"></div>
                 </div>
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Assigned To</label>
+                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Assigned Infrastructure Personnel</label>
                         <span id="viewModalUser" class="badge bg-white text-dark border px-3 py-2 rounded-3 fw-medium font-sans-serif w-100 text-start"></span>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Priority</label>
+                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Priority Matrix</label>
                         <span id="viewModalPriority" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center"></span>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Status</label>
+                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Live Progress Status</label>
                         <span id="viewModalStatus" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center"></span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer border-top-0 pt-0">
-                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Dismiss File</button>
             </div>
         </div>
     </div>
@@ -396,7 +396,7 @@
             <form id="editTaskForm">
                 <input type="hidden" id="editModalTaskId">
                 <div class="modal-header border-bottom border-light">
-                    <h5 class="fw-bold text-dark m-0"><i class="bi bi-pencil-square text-warning me-2"></i>Edit Task</h5>
+                    <h5 class="fw-bold text-dark m-0"><i class="bi bi-pencil-square text-warning me-2"></i>Modify Task parameters</h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
@@ -405,11 +405,11 @@
                         <input type="text" id="editModalTitleInput" class="form-control py-2" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Description</label>
+                        <label class="form-label text-muted small fw-bold">Description Criteria</label>
                         <textarea id="editModalDescInput" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Assign To <span class="text-danger">*</span></label>
+                        <label class="form-label text-muted small fw-bold">Assignee Signature <span class="text-danger">*</span></label>
                         <select id="editModalUserInput" class="form-select py-2" required>
                             {% for employee in employees %}
                                 <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
@@ -418,7 +418,7 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-6">
-                            <label class="form-label text-muted small fw-bold">Priority <span class="text-danger">*</span></label>
+                            <label class="form-label text-muted small fw-bold">Priority Matrix <span class="text-danger">*</span></label>
                             <select id="editModalPriorityInput" class="form-select py-2" required>
                                 <option value="1_HIGH">High</option>
                                 <option value="2_MEDIUM">Medium</option>
@@ -426,7 +426,7 @@
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-muted small fw-bold">Status <span class="text-danger">*</span></label>
+                            <label class="form-label text-muted small fw-bold">Task Progress Status <span class="text-danger">*</span></label>
                             <select id="editModalStatusInput" class="form-select py-2" required>
                                 <option value="PENDING">Pending</option>
                                 <option value="PROGRESSING">In Progress</option>
@@ -437,7 +437,7 @@
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-warning btn-sm px-4 py-2 ui-pill-btn fw-bold shadow-sm text-dark">Save Changes</button>
+                    <button type="submit" class="btn btn-warning btn-sm px-4 py-2 ui-pill-btn fw-bold shadow-sm text-dark">Save Alterations</button>
                 </div>
             </form>
         </div>
@@ -516,13 +516,13 @@
         toast.show();
     }
 
-    // Modal view details binder
+    // Modal Parameter Injection Listeners
     const viewModalEl = document.getElementById('viewTaskModal');
     viewModalEl.addEventListener('show.bs.modal', function (event) {
         const triggerBtn = event.relatedTarget;
         
         document.getElementById('viewModalTitle').innerText = triggerBtn.getAttribute('data-title');
-        document.getElementById('viewModalDesc').innerText = triggerBtn.getAttribute('data-desc') || 'No description provided.';
+        document.getElementById('viewModalDesc').innerText = triggerBtn.getAttribute('data-desc') || 'No description summary logged.';
         document.getElementById('viewModalUser').innerHTML = `<i class="bi bi-person me-2 text-muted"></i>` + triggerBtn.getAttribute('data-user');
         
         const priority = triggerBtn.getAttribute('data-priority');
@@ -542,7 +542,6 @@
         else statusBadge.classList.add('bg-warning', 'bg-opacity-10', 'text-warning-emphasis');
     });
 
-    // Modal edit params binder
     const editModalEl = document.getElementById('editTaskModal');
     editModalEl.addEventListener('show.bs.modal', function (event) {
         const triggerBtn = event.relatedTarget;
@@ -555,41 +554,36 @@
         document.getElementById('editModalStatusInput').value = triggerBtn.getAttribute('data-status');
     });
 
-    // Form Submission: Edit Task (Fixed Payload mapping Scheme)
+    // Intercept Edit Task Form Submissions Async
     document.getElementById('editTaskForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const taskId = document.getElementById('editModalTaskId').value;
         
         fetch(`/api/tasks/${taskId}/update/`, {
-            method: 'POST',
+            method: 'POST', // standard endpoint data push mapping override style
             headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
             body: JSON.stringify({
                 title: document.getElementById('editModalTitleInput').value.trim(),
                 description: document.getElementById('editModalDescInput').value.trim(),
                 user_id: document.getElementById('editModalUserInput').value,
-                assigned_to: document.getElementById('editModalUserInput').value, // Fallback schema identifier
                 priority: document.getElementById('editModalPriorityInput').value,
                 status: document.getElementById('editModalStatusInput').value
             })
         })
-        .then(res => {
-            if(!res.ok) throw new Error('API Core layout submission failure.');
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
-            if (data.status === 'success' || data.success) {
-                showToast('Task updated successfully.');
-                const modalInstance = bootstrap.Modal.getInstance(editModalEl);
-                if (modalInstance) modalInstance.hide();
-                setTimeout(() => location.reload(), 1000);
+            if (data.status === 'success') {
+                showToast('Task configurations modified and updated successfully.');
+                bootstrap.Modal.getInstance(editModalEl).hide();
+                setTimeout(() => location.reload(), 1200);
             } else {
-                showToast(data.error || 'Failed to update task details.', 'danger');
+                showToast(data.error || 'Failed to apply update.', 'danger');
             }
         })
-        .catch(() => showToast('Could not connect to the server.', 'danger'));
+        .catch(() => showToast('Error linking to network core databases.', 'danger'));
     });
 
-    // Real-Time Table Filter Engine
+    // Dynamic Live Filter for Assigned Tasks
     document.getElementById('taskSearchInput').addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const rows = document.querySelectorAll('.task-searchable-row');
@@ -650,7 +644,7 @@
         const confirmPassword = document.getElementById('new_password_confirm').value;
 
         if (password !== confirmPassword) {
-            showToast('Passwords do not match. Please try again.', 'danger');
+            showToast('Passphrases do not match. Review entries.', 'danger');
             return;
         }
 
@@ -675,7 +669,7 @@
         .then(res => res.json())
         .then(data => {
             if(data.status === 'success') { 
-                showToast('Employee account created successfully.');
+                showToast('Employee account established successfully.');
                 setTimeout(() => location.reload(), 1200);
             } else { 
                 showToast(data.error, 'danger'); 
@@ -731,7 +725,7 @@
         .then(res => res.json())
         .then(data => {
             if(data.status === 'success') { 
-                showToast('Task assigned successfully.');
+                showToast('Work order dispatched and assigned successfully.');
                 setTimeout(() => location.reload(), 1200);
             } else { 
                 showToast(data.error, 'danger'); 
@@ -774,14 +768,14 @@
                 if(data.status === 'success') { 
                     const row = document.getElementById(`admin-task-row-${taskId}`);
                     if(row) row.remove();
-                    showToast('Task removed.');
+                    showToast('Assigned log entry removed.');
                 } else {
-                    showToast(data.error || 'Failed to delete task.', 'danger');
+                    showToast(data.error || 'Failed to remove the entry.', 'danger');
                 }
             })
             .catch(err => {
                 console.error(err);
-                showToast('Could not connect to the server.', 'danger');
+                showToast('A network execution error occurred.', 'danger');
             });
         }
     }
