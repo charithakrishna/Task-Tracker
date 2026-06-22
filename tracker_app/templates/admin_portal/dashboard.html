@@ -159,13 +159,13 @@
                                                 <label class="form-label text-secondary small fw-semibold d-block mb-2">Priority Level <span class="text-danger fw-bold">*</span></label>
                                                 <div class="d-flex gap-2 p-1 bg-light rounded-3 border border-secondary border-opacity-15" role="group">
                                                     <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
-                                                    <label class="btn btn-priority-pill flex-fill py-2 fw-semibold small text-uppercase" for="btn_high">High</label>
+                                                    <label class="btn btn-priority-pill btn-priority-high flex-fill py-2 fw-semibold small text-uppercase" for="btn_high">High</label>
 
                                                     <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
-                                                    <label class="btn btn-priority-pill flex-fill py-2 fw-semibold small text-uppercase" for="btn_medium">Medium</label>
+                                                    <label class="btn btn-priority-pill btn-priority-medium flex-fill py-2 fw-semibold small text-uppercase" for="btn_medium">Medium</label>
 
                                                     <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
-                                                    <label class="btn btn-priority-pill flex-fill py-2 fw-semibold small text-uppercase" for="btn_low">Low</label>
+                                                    <label class="btn btn-priority-pill btn-priority-low flex-fill py-2 fw-semibold small text-uppercase" for="btn_low">Low</label>
                                                 </div>
                                             </div>
                                             <div class="text-end">
@@ -216,7 +216,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="py-3">
-                                                    <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                    <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-success bg-opacity-10 text-success{% endif %} px-2 py-1.5 rounded-3">
                                                         {{ task.get_priority_display }}
                                                     </span>
                                                 </td>
@@ -246,7 +246,9 @@
                                                                 data-status="{{ task.status }}">
                                                             <i class="bi bi-pencil-square fs-5"></i>
                                                         </button>
-                                                        <button class="btn btn-link link-danger p-0 border-0 shadow-none" title="Delete task" onclick="deleteTaskByAdmin('{{ task.id }}')">
+                                                        <button class="btn btn-link link-danger p-0 border-0 shadow-none text-danger" title="Delete task"
+                                                                data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                                data-id="{{ task.id }}">
                                                             <i class="bi bi-trash-fill fs-5 opacity-75"></i>
                                                         </button>
                                                     </div>
@@ -446,6 +448,24 @@
     </div>
 </div>
 
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="fw-bold text-dark m-0"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Delete Task?</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="text-secondary small mb-0">Are you sure you want to permanently delete this task? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary btn-sm px-3 py-1.5 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger btn-sm px-3 py-1.5 ui-pill-btn fw-bold shadow-sm text-white">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     /* Custom Table Subtle Accent */
     .custom-table-row {
@@ -456,7 +476,7 @@
         background-color: #f8fafc;
     }
 
-    /* Subtle Blue Pill Buttons Styling */
+    /* Subtle Pill Buttons Base Styling */
     .btn-priority-pill {
         color: #475569;
         background-color: #ffffff;
@@ -468,12 +488,27 @@
         background-color: #f1f5f9;
         color: #1e293b;
     }
-    .btn-check:checked + .btn-priority-pill {
+    
+    /* Dynamic Priority Toggle Colors */
+    .btn-check:checked + .btn-priority-high {
         color: #ffffff !important;
-        background-color: #0d6efd !important;
-        border-color: #0d6efd !important;
-        box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.15);
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+        box-shadow: 0 4px 6px -1px rgba(220, 53, 69, 0.2);
     }
+    .btn-check:checked + .btn-priority-medium {
+        color: #ffffff !important;
+        background-color: #eab308 !important;
+        border-color: #eab308 !important;
+        box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.2);
+    }
+    .btn-check:checked + .btn-priority-low {
+        color: #ffffff !important;
+        background-color: #16a34a !important;
+        border-color: #16a34a !important;
+        box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);
+    }
+
     .form-control.is-invalid, .form-select.is-invalid {
         border-color: #dc3545 !important;
         background-image: none !important;
@@ -561,7 +596,7 @@
         priorityBadge.className = 'badge px-3 py-2 rounded-3 fw-semibold w-100 text-center ';
         if(priority === 'High') priorityBadge.classList.add('bg-danger', 'bg-opacity-10', 'text-danger');
         else if(priority === 'Medium') priorityBadge.classList.add('bg-warning', 'bg-opacity-10', 'text-warning-emphasis');
-        else priorityBadge.classList.add('bg-info', 'bg-opacity-10', 'text-info-emphasis');
+        else priorityBadge.classList.add('bg-success', 'bg-opacity-10', 'text-success');
 
         const status = triggerBtn.getAttribute('data-status');
         const statusBadge = document.getElementById('viewModalStatus');
@@ -584,12 +619,41 @@
         document.getElementById('editModalStatusInput').value = triggerBtn.getAttribute('data-status');
     });
 
+    // Delete Modal State Capture
+    let taskToDeleteId = null;
+    const deleteModalEl = document.getElementById('deleteConfirmModal');
+    deleteModalEl.addEventListener('show.bs.modal', function (event) {
+        const triggerBtn = event.relatedTarget;
+        taskToDeleteId = triggerBtn.getAttribute('data-id');
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (!taskToDeleteId) return;
+
+        fetch(`/api/tasks/${taskToDeleteId}/delete/`, {
+            method: 'DELETE',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'}
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') { 
+                const row = document.getElementById(`admin-task-row-${taskToDeleteId}`);
+                if(row) row.remove();
+                showToast('Task deleted successfully.');
+                const modalInstance = bootstrap.Modal.getInstance(deleteModalEl);
+                if (modalInstance) modalInstance.hide();
+            } else {
+                showToast(data.error || 'Failed to delete task.', 'danger');
+            }
+        })
+        .catch(() => showToast('Could not connect to the server.', 'danger'));
+    });
+
     // Form Submission Handler: Save Task Changes to Database
     document.getElementById('editTaskForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const taskId = document.getElementById('editModalTaskId').value;
         
-        // Form Data serialization maps directly to standard Django request.POST attributes
         const formData = new URLSearchParams();
         formData.append('title', document.getElementById('editModalTitleInput').value.trim());
         formData.append('description', document.getElementById('editModalDescInput').value.trim());
@@ -796,28 +860,5 @@
             checkValidationState();
         }
     });
-
-    function deleteTaskByAdmin(taskId) {
-        if(confirm('Are you sure you want to delete this task?')) {
-            fetch(`/api/tasks/${taskId}/delete/`, {
-                method: 'DELETE',
-                headers: {'X-CSRFToken': '{{ csrf_token }}'}
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') { 
-                    const row = document.getElementById(`admin-task-row-${taskId}`);
-                    if(row) row.remove();
-                    showToast('Task deleted successfully.');
-                } else {
-                    showToast(data.error || 'Failed to delete task.', 'danger');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                showToast('Could not connect to the server.', 'danger');
-            });
-        }
-    }
 </script>
 {% endblock %}
