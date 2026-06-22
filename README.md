@@ -38,10 +38,8 @@ deleted_count, _ = User.objects.filter(username="1040663").delete()
 print(f"Successfully deleted {deleted_count} user row(s).")
 ```
 ### Quick Links
-<a href="{% url 'employee_login' %}">Employee Login</a>
-
-<a href="{% url 'admin_login' %}">Admin Login</a>
-> `admin` is the super user. Access admin page at : 127.0.0.1:8000/admin/portal/login
+> Access Admin Page at : 127.0.0.1:8000/admin/portal/login
+> Access Employee Page at : 127.0.0.1:8000
 
 | Emp ID / Username | Email | Password |
 | :--- | :--- | :--- |
