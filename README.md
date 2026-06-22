@@ -39,6 +39,7 @@ print(f"Successfully deleted {deleted_count} user row(s).")
 ```
 ### Quick Links
 <a href="http://127.0.0.1:8080/">Employee Login</a>
+
 <a href="http://127.0.0.1:8080/admin/portal/login/">Admin Login</a>
 > `admin` is the super user. Access admin page at : 127.0.0.1:8000/admin/portal/login
 
