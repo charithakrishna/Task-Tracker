@@ -15,16 +15,16 @@
     </div>
 </div>
 
-<div class="container-fluid p-0" style="font-family: 'Inter', sans-serif;">
-    <nav class="navbar navbar-expand bg-white border-bottom shadow-sm px-4 py-3 mb-5">
+<div class="container-fluid p-0" style="font-family: 'Inter', sans-serif; background-color: #f4f7fc; min-height: 100vh;">
+    <nav class="navbar navbar-expand bg-white border-bottom border-primary border-opacity-10 shadow-sm px-4 py-3 mb-5">
         <div class="container py-1">
-            <span class="navbar-brand fw-bold text-dark d-flex align-items-center gap-2 m-0 fs-5">
-                <i class="bi bi-shield-fill-check text-danger"></i> Admin Dashboard
+            <span class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2 m-0 fs-5">
+                <i class="bi bi-shield-fill-check text-primary"></i> Admin Dashboard
             </span>
             
             <div class="dropdown ms-auto">
-                <button class="btn btn-link link-dark text-decoration-none d-flex align-items-center gap-2 p-0 dropdown-toggle border-0" type="button" id="adminMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span id="adminAvatarNode" class="text-white fw-bold small rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;"></span>
+                <button class="btn btn-link link-primary text-decoration-none d-flex align-items-center gap-2 p-0 dropdown-toggle border-0" type="button" id="adminMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="adminAvatarNode" class="text-white fw-bold small rounded-circle d-flex align-items-center justify-content-center shadow-sm bg-primary" style="width: 38px; height: 38px;"></span>
                     <span class="fw-semibold small text-dark d-none d-sm-inline">{{ request.user.username }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2 rounded-4" aria-labelledby="adminMenuButton" style="min-width: 160px;">
@@ -37,51 +37,51 @@
     <div class="container px-3 px-md-4">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
-                <h3 class="fw-bold text-dark mb-1">Admin Panel</h3>
-                <p class="text-muted small mb-0">Manage work distribution channels, establish infrastructure roles, and audit operational rosters.</p>
+                <h3 class="fw-bold text-dark mb-1">Admin Management Panel</h3>
+                <p class="text-muted small mb-0">Assign tasks, view employee profiles, and track overall progress.</p>
             </div>
-            <button class="btn btn-outline-primary btn-sm ui-pill-btn px-4 py-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#createUserCollapse">
+            <button class="btn btn-primary btn-sm ui-pill-btn px-4 py-2 shadow-sm fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#createUserCollapse">
                 <i class="bi bi-person-add me-1"></i> Create Employee Account
             </button>
         </div>
 
-        <ul class="nav nav-pills gap-2 border-bottom pb-3 mb-5" id="dashboardTabs" role="tablist">
+        <ul class="nav nav-pills gap-2 border-bottom border-primary border-opacity-10 pb-3 mb-5" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-semibold small ui-pill-btn px-4 py-2" id="operations-tab" data-bs-toggle="pill" data-bs-target="#operationsPane" type="button" role="tab" aria-controls="operationsPane" aria-selected="true">
-                    <i class="bi bi-grid-1x2-fill me-2"></i>Manage & Assign Tasks
+                <button class="nav-link active fw-semibold small ui-pill-btn px-4 py-2 text-primary border border-primary border-opacity-20" id="operations-tab" data-bs-toggle="pill" data-bs-target="#operationsPane" type="button" role="tab" aria-controls="operationsPane" aria-selected="true">
+                    <i class="bi bi-list-task me-2"></i>Tasks & Assignments
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link fw-semibold small ui-pill-btn px-4 py-2" id="users-tab" data-bs-toggle="pill" data-bs-target="#usersPane" type="button" role="tab" aria-controls="usersPane" aria-selected="false">
-                    <i class="bi bi-people-fill me-2"></i>Registered Employees ({{ employees|length }})
+                <button class="nav-link fw-semibold small ui-pill-btn px-4 py-2 text-secondary border border-transparent" id="users-tab" data-bs-toggle="pill" data-bs-target="#usersPane" type="button" role="tab" aria-controls="usersPane" aria-selected="false">
+                    <i class="bi bi-people-fill me-2"></i>Employee List ({{ employees|length }})
                 </button>
             </li>
         </ul>
 
         <div class="collapse mb-5" id="createUserCollapse">
-            <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4 bg-white rounded-4">
-                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-gear me-2"></i>New Account Form</h5>
+            <div class="dashboard-metric-card border border-primary border-opacity-30 shadow-sm p-4 bg-white rounded-4">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-plus-fill me-2"></i>New Account Details</h5>
                 <form id="createUserForm" class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">First Name</label>
-                        <input type="text" id="new_first_name" class="form-control" placeholder="Enter first name..." required>
+                        <input type="text" id="new_first_name" class="form-control border-primary border-opacity-20" placeholder="Enter first name..." required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Last Name</label>
-                        <input type="text" id="new_last_name" class="form-control" placeholder="Enter last name..." required>
+                        <input type="text" id="new_last_name" class="form-control border-primary border-opacity-20" placeholder="Enter last name..." required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Employee ID / Username</label>
-                        <input type="text" id="new_employee_id" class="form-control" placeholder="Enter employee ID..." required>
+                        <input type="text" id="new_employee_id" class="form-control border-primary border-opacity-20" placeholder="Enter employee ID..." required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Email Address</label>
-                        <input type="email" id="new_email" class="form-control" placeholder="Enter email address..." required>
+                        <input type="email" id="new_email" class="form-control border-primary border-opacity-20" placeholder="Enter email address..." required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted fw-bold">Mobile Phone Number</label>
+                        <label class="form-label small text-muted fw-bold">Phone Number</label>
                         <div class="input-group">
-                            <select id="new_phone_code" class="form-select" style="max-width: 110px;">
+                            <select id="new_phone_code" class="form-select border-primary border-opacity-20" style="max-width: 110px;">
                                 <option value="+1">+1 (US)</option>
                                 <option value="+91" selected>+91 (IN)</option>
                                 <option value="+44">+44 (UK)</option>
@@ -90,13 +90,13 @@
                                 <option value="+49">+49 (DE)</option>
                                 <option value="+33">+33 (FR)</option>
                             </select>
-                            <input type="tel" id="new_phone_number" class="form-control" placeholder="e.g., 9876543210" required>
+                            <input type="tel" id="new_phone_number" class="form-control border-primary border-opacity-20" placeholder="e.g., 9876543210" required>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small text-muted fw-bold">Track Assignment / Role</label>
-                        <select id="new_role" class="form-select" required>
-                            <option value="" disabled selected>-- Select Operational Role Track --</option>
+                        <label class="form-label small text-muted fw-bold">Role / Track</label>
+                        <select id="new_role" class="form-select border-primary border-opacity-20" required>
+                            <option value="" disabled selected>-- Select Role --</option>
                             <option value="Software Engineer Track">Software Engineer Track</option>
                             <option value="Quality Assurance Track">Quality Assurance Track</option>
                             <option value="Product Management Track">Product Management Track</option>
@@ -105,32 +105,31 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Password</label>
-                        <input type="password" id="new_password" class="form-control" placeholder="Create password..." required>
+                        <input type="password" id="new_password" class="form-control border-primary border-opacity-20" placeholder="Create password..." required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small text-muted fw-bold">Confirm Password</label>
-                        <input type="password" id="new_password_confirm" class="form-control" placeholder="Repeat password..." required>
+                        <input type="password" id="new_password_confirm" class="form-control border-primary border-opacity-20" placeholder="Repeat password..." required>
                     </div>
                     <div class="col-12 text-end mt-4">
-                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn">Save New Account</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn fw-semibold shadow-sm">Save Account</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <div class="tab-content" id="dashboardTabsContent">
-            
             <div class="tab-pane fade show active animate-fade-in" id="operationsPane" role="tabpanel" aria-labelledby="operations-tab">
                 <div class="row g-4">
                     
                     <div class="col-12">
-                        <div class="dashboard-metric-card shadow-sm p-4 border bg-white rounded-4">
-                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-send-plus-fill me-2 text-primary"></i>Assign a New Task</h5>
+                        <div class="dashboard-metric-card shadow-sm p-4 border border-primary border-opacity-10 bg-white rounded-4">
+                            <h5 class="fw-bold text-primary mb-3"><i class="bi bi-plus-circle-fill me-2"></i>Assign a New Task</h5>
                             
                             <div id="validationWarningCard" class="alert alert-danger border-danger border-opacity-20 rounded-3 d-none mb-4 p-3 shadow-sm animate-fade-in">
                                 <div class="d-flex align-items-center gap-2 fw-semibold text-danger small">
                                     <i class="bi bi-exclamation-triangle-fill fs-6"></i>
-                                    <span>Required operational entries are missing. Please complete the highlighted fields.</span>
+                                    <span>Please complete all fields marked with an asterisk (*).</span>
                                 </div>
                             </div>
 
@@ -138,11 +137,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label text-muted small fw-semibold">Task Title <span class="text-danger fw-bold">*</span></label>
-                                        <input type="text" id="task_title" class="form-control bg-light border py-2 rounded-3" placeholder="What needs to be done?" required>
+                                        <input type="text" id="task_title" class="form-control bg-light border-primary border-opacity-10 py-2 rounded-3" placeholder="What needs to be done?" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label text-muted small fw-semibold">Assign To <span class="text-danger fw-bold">*</span></label>
-                                        <select id="task_user" class="form-select bg-light border py-2 rounded-3" required>
+                                        <select id="task_user" class="form-select bg-light border-primary border-opacity-10 py-2 rounded-3" required>
                                             <option value="">-- Choose an employee --</option>
                                             {% for employee in employees %}
                                                 <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
@@ -150,25 +149,26 @@
                                         </select>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
-                                        <textarea id="task_desc" class="form-control bg-light border rounded-3" rows="2" placeholder="Add additional details or notes here..."></textarea>
+                                        <label class="form-label text-muted small fw-semibold">Description <span class="text-muted fw-normal" style="font-size: 11px;">(Optional)</span></label>
+                                        <textarea id="task_desc" class="form-control bg-light border-primary border-opacity-10 rounded-3" rows="2" placeholder="Add details or context here..."></textarea>
                                     </div>
+                                    
                                     <div class="col-md-6 d-flex flex-column justify-content-end">
-                                        <label class="form-label text-muted small fw-semibold d-block mb-2">Set Priority <span class="text-danger fw-bold">*</span></label>
-                                        <div class="btn-group w-100" role="group">
+                                        <label class="form-label text-muted small fw-semibold d-block mb-2">Priority Level <span class="text-danger fw-bold">*</span></label>
+                                        <div class="d-flex gap-2 p-1 bg-light rounded-3 border border-primary border-opacity-10" role="group">
                                             <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
-                                            <label class="btn btn-outline-danger py-2 fw-semibold small" for="btn_high">High</label>
+                                            <label class="btn btn-priority-pill flex-fill py-2 fw-semibold small text-uppercase" for="btn_high">High</label>
 
                                             <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
-                                            <label class="btn btn-outline-warning py-2 fw-semibold small" for="btn_medium">Medium</label>
+                                            <label class="btn btn-priority-pill flex-fill py-2 fw-semibold small text-uppercase" for="btn_medium">Medium</label>
 
                                             <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
-                                            <label class="btn btn-outline-info py-2 fw-semibold small" for="btn_low">Low</label>
+                                            <label class="btn btn-priority-pill flex-fill py-2 fw-semibold small text-uppercase" for="btn_low">Low</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm ui-pill-btn px-4 py-2.5 shadow-sm fw-bold w-100">
-                                            <i class="bi bi-send-fill small me-1"></i> Assign Task
+                                        <button type="submit" class="btn btn-primary btn-sm ui-pill-btn px-4 py-2.5 shadow-sm fw-bold w-100 mb-1">
+                                            <i class="bi bi-check-circle-fill small me-1"></i> Confirm and Assign
                                         </button>
                                     </div>
                                 </div>
@@ -177,38 +177,38 @@
                     </div>
 
                     <div class="col-12 mb-5">
-                        <div class="dashboard-metric-card shadow-sm p-4 border bg-white rounded-4">
+                        <div class="dashboard-metric-card shadow-sm p-4 border border-primary border-opacity-10 bg-white rounded-4">
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                                <h5 class="fw-bold text-dark m-0"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
+                                <h5 class="fw-bold text-dark m-0"><i class="bi bi-list-columns-reverse me-2 text-primary"></i>Assigned Tasks List</h5>
                                 
                                 <div class="input-group" style="max-width: 350px;">
-                                    <span class="input-group-text bg-light border-end-0 text-muted py-2"><i class="bi bi-search"></i></span>
-                                    <input type="text" id="taskSearchInput" class="form-control bg-light border-start-0 py-2 small" placeholder="Search by name, task title...">
+                                    <span class="input-group-text bg-light border-primary border-opacity-20 border-end-0 text-primary py-2"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="taskSearchInput" class="form-control bg-light border-primary border-opacity-20 border-start-0 py-2 small" placeholder="Search tasks or employees...">
                                 </div>
                             </div>
                             
                             <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                                <table class="table table-hover align-middle mb-0" id="tasksTable" style="border-collapse: separate; border-spacing: 0 10px;">
-                                    <thead class="sticky-top bg-white" style="z-index: 5;">
-                                        <tr class="text-muted small text-uppercase">
-                                            <th class="border-0 pb-2 ps-3">Task Details</th>
-                                            <th class="border-0 pb-2">Assigned To</th>
-                                            <th class="border-0 pb-2">Priority</th>
-                                            <th class="border-0 pb-2">Status</th>
-                                            <th class="border-0 pb-2 text-center pe-3">Actions</th>
+                                <table class="table align-middle mb-0" id="tasksTable" style="border-collapse: separate; border-spacing: 0 10px;">
+                                    <thead class="sticky-top bg-light text-primary border-bottom" style="z-index: 5;">
+                                        <tr class="small text-uppercase fw-bold" style="background-color: #ebf2fe;">
+                                            <th class="border-0 py-3 ps-3 rounded-start-3">Task Details</th>
+                                            <th class="border-0 py-3">Assigned To</th>
+                                            <th class="border-0 py-3">Priority</th>
+                                            <th class="border-0 py-3">Status</th>
+                                            <th class="border-0 py-3 text-center pe-3 rounded-end-3">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% if all_tasks %}
                                             {% for task in all_tasks %}
-                                            <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm task-searchable-row">
+                                            <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm task-searchable-row border border-primary border-opacity-10">
                                                 <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 250px;">
                                                     <span class="fw-bold text-dark mb-0 d-block searchable-title">{{ task.title }}</span>
                                                     <small class="text-muted d-block text-truncate searchable-desc" style="max-width: 240px;">{{ task.description }}</small>
                                                 </td>
                                                 <td class="py-3 task-user-cell">
-                                                    <span class="badge bg-white text-dark border rounded-3 px-2 py-1.5 searchable-user">
-                                                        <i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
+                                                    <span class="badge bg-white text-primary border border-primary border-opacity-20 rounded-3 px-2 py-1.5 searchable-user">
+                                                        <i class="bi bi-person-fill m-1 text-primary"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
                                                     </span>
                                                 </td>
                                                 <td class="py-3">
@@ -217,7 +217,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="py-3">
-                                                    <span class="badge {% if task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                    <span class="badge {% if task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-secondary bg-opacity-10 text-secondary-emphasis{% endif %} px-2 py-1.5 rounded-3">
                                                         {{ task.get_status_display }}
                                                     </span>
                                                 </td>
@@ -230,9 +230,9 @@
                                                                 data-user="{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})"
                                                                 data-priority="{{ task.get_priority_display }}"
                                                                 data-status="{{ task.get_status_display }}">
-                                                            <i class="bi bi-eye fs-5"></i>
+                                                            <i class="bi bi-eye-fill fs-5"></i>
                                                         </button>
-                                                        <button class="btn btn-link link-warning p-0 border-0 shadow-none" title="Edit task"
+                                                        <button class="btn btn-link link-primary p-0 border-0 shadow-none" title="Edit task"
                                                                 data-bs-toggle="modal" data-bs-target="#editTaskModal"
                                                                 data-id="{{ task.id }}"
                                                                 data-title="{{ task.title }}"
@@ -243,54 +243,53 @@
                                                             <i class="bi bi-pencil-square fs-5"></i>
                                                         </button>
                                                         <button class="btn btn-link link-danger p-0 border-0 shadow-none" title="Delete task" onclick="deleteTaskByAdmin('{{ task.id }}')">
-                                                            <i class="bi bi-trash3 fs-5"></i>
+                                                            <i class="bi bi-trash-fill fs-5"></i>
                                                         </button>
                                                     </div>
                                                 </td>
                                             </tr>
                                             {% endfor %}
                                         {% else %}
-                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
+                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border border-primary border-opacity-10">No tasks found.</td></tr>
                                         {% endif %}
                                         
                                         <tr id="noResultsMatchRow" class="d-none">
-                                            <td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No matching task or worker details identified inside log pool.</td>
+                                            <td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border border-primary border-opacity-10">No tasks or employee data found matching your search.</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    
                 </div>
             </div>
 
             <div class="tab-pane fade animate-fade-in" id="usersPane" role="tabpanel" aria-labelledby="users-tab">
-                <div class="dashboard-metric-card shadow-sm p-4 border mb-5 bg-white rounded-4">
+                <div class="dashboard-metric-card shadow-sm p-4 border border-primary border-opacity-10 mb-5 bg-white rounded-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                        <h5 class="fw-bold text-dark m-0"><i class="bi bi-shield-lock-fill me-2 text-danger"></i>Employee Personal Information</h5>
-                        <span class="badge bg-dark px-3 py-2 ui-pill-btn fw-semibold small">Active Employee List</span>
+                        <h5 class="fw-bold text-dark m-0"><i class="bi bi-people-fill me-2 text-primary"></i>Employee Profiles</h5>
+                        <span class="badge bg-primary px-3 py-2 ui-pill-btn fw-semibold small">Active Directory</span>
                     </div>
                     
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 12px;">
-                            <thead>
-                                <tr class="text-muted small text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">
-                                    <th class="border-0 pb-2 ps-3">Employee Name</th>
-                                    <th class="border-0 pb-2">Employee ID</th>
-                                    <th class="border-0 pb-2">Corporate Email Address</th>
-                                    <th class="border-0 pb-2">Mobile Phone</th>
-                                    <th class="border-0 pb-2">Role</th>
-                                    <th class="border-0 pb-2 text-center pe-3">Infrastructure Role</th>
+                            <thead class="bg-light text-primary border-bottom">
+                                <tr class="small text-uppercase fw-bold" style="background-color: #ebf2fe;">
+                                    <th class="border-0 py-3 ps-3 rounded-start-3">Name</th>
+                                    <th class="border-0 py-3">Employee ID</th>
+                                    <th class="border-0 py-3">Email Address</th>
+                                    <th class="border-0 py-3">Phone</th>
+                                    <th class="border-0 py-3">Role</th>
+                                    <th class="border-0 py-3 text-center pe-3 rounded-end-3">Account Type</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% if employees %}
                                     {% for emp in employees %}
-                                    <tr class="bg-light rounded-3 shadow-sm">
+                                    <tr class="bg-light rounded-3 shadow-sm border border-primary border-opacity-10">
                                         <td class="ps-3 py-3 rounded-start-3">
                                             <div class="d-flex align-items-center gap-2.5">
-                                                <div class="bg-secondary text-white fw-bold rounded-circle d-flex align-items-center justify-content-center small shadow-sm roster-avatar" data-name="{{ emp.first_name }} {{ emp.last_name }}" style="width: 35px; height: 35px; font-size: 12px;">
+                                                <div class="bg-primary text-white fw-bold rounded-circle d-flex align-items-center justify-content-center small shadow-sm roster-avatar" data-name="{{ emp.first_name }} {{ emp.last_name }}" style="width: 35px; height: 35px; font-size: 12px;">
                                                     {{ emp.first_name|slice:":1" }}{{ emp.last_name|slice:":1" }}
                                                 </div>
                                                 <div>
@@ -304,21 +303,21 @@
                                         </td>
                                         <td class="py-3">
                                             <a href="mailto:{{ emp.email }}" class="text-decoration-none text-dark fw-medium small d-flex align-items-center gap-1.5">
-                                                <i class="bi bi-envelope text-muted"></i>{{ emp.email }}
+                                                <i class="bi bi-envelope-fill text-primary"></i>{{ emp.email }}
                                             </a>
                                         </td>
                                         <td class="py-3 small text-muted font-monospace">
                                             {% if emp.phone_number %}
-                                                <i class="bi bi-telephone me-1"></i>{{ emp.phone_number }}
+                                                <i class="bi bi-telephone-fill text-muted me-1"></i>{{ emp.phone_number }}
                                             {% elif emp.profile and emp.profile.phone_number %}
-                                                <i class="bi bi-telephone me-1"></i>{{ emp.profile.phone_number }}
+                                                <i class="bi bi-telephone-fill text-muted me-1"></i>{{ emp.profile.phone_number }}
                                             {% else %}
-                                                <span class="text-muted opacity-50 font-sans-serif text-italic small">Not Registered</span>
+                                                <span class="text-muted opacity-50 font-sans-serif text-italic small">Not Added</span>
                                             {% endif %}
                                         </td>
                                         <td class="py-3">
-                                            <span class="badge bg-white text-dark border border-opacity-70 px-2.5 py-1.5 rounded-3 font-sans-serif small">
-                                                <i class="bi bi-briefcase text-muted me-1"></i>
+                                            <span class="badge bg-white text-dark border border-primary border-opacity-20 px-2.5 py-1.5 rounded-3 font-sans-serif small">
+                                                <i class="bi bi-briefcase-fill text-primary me-1"></i>
                                                 {% if emp.role %}
                                                     {{ emp.role }}
                                                 {% elif emp.profile and emp.profile.role %}
@@ -330,61 +329,60 @@
                                         </td>
                                         <td class="text-center py-3 pe-3 rounded-end-3">
                                             {% if emp.is_superuser %}
-                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 px-3 py-1.5 rounded-pill fw-bold small">Roster Admin</span>
+                                                <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold small shadow-sm">Admin</span>
                                             {% elif emp.is_staff %}
-                                                <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning border-opacity-20 px-3 py-1.5 rounded-pill fw-semibold small">Staff Manager</span>
+                                                <span class="badge bg-info text-dark px-3 py-1.5 rounded-pill fw-semibold small shadow-sm">Manager</span>
                                             {% else %}
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-1.5 rounded-pill fw-medium small">Personnel Core</span>
+                                                <span class="badge bg-light text-primary border border-primary border-opacity-20 px-3 py-1.5 rounded-pill fw-medium small">Employee</span>
                                             {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 {% else %}
-                                    <tr><td colspan="6" class="text-center text-muted py-5 rounded-3 bg-light border">No operational workforce data exists inside database registry pools.</td></tr>
+                                    <tr><td colspan="6" class="text-center text-muted py-5 rounded-3 bg-light border border-primary border-opacity-10">No employee profiles exist in the system database.</td></tr>
                                 {% endif %}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="viewTaskModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-4">
             <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="fw-bold text-dark m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Task Information Record</h5>
+                <h5 class="fw-bold text-dark m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Task Details</h5>
                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body py-4">
                 <div class="mb-3">
                     <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Task Title</label>
-                    <p id="viewModalTitle" class="fw-bold text-dark mb-0 fs-5"></p>
+                    <p id="viewModalTitle" class="fw-bold text-primary mb-0 fs-5"></p>
                 </div>
                 <div class="mb-4">
-                    <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Description Criteria</label>
-                    <div class="bg-light p-3 rounded-3 text-secondary small text-wrap border" id="viewModalDesc" style="min-height: 60px;"></div>
+                    <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Description</label>
+                    <div class="bg-light p-3 rounded-3 text-secondary small text-wrap border border-primary border-opacity-10" id="viewModalDesc" style="min-height: 60px;"></div>
                 </div>
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Assigned Infrastructure Personnel</label>
-                        <span id="viewModalUser" class="badge bg-white text-dark border px-3 py-2 rounded-3 fw-medium font-sans-serif w-100 text-start"></span>
+                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Assigned To</label>
+                        <span id="viewModalUser" class="badge bg-light text-dark border border-primary border-opacity-10 px-3 py-2 rounded-3 fw-medium w-100 text-start"></span>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Priority Matrix</label>
-                        <span id="viewModalPriority" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center"></span>
+                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Priority</label>
+                        <span id="viewModalPriority" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center shadow-sm"></span>
                     </div>
                     <div class="col-6">
-                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Live Progress Status</label>
-                        <span id="viewModalStatus" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center"></span>
+                        <label class="text-muted small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Status</label>
+                        <span id="viewModalStatus" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center shadow-sm"></span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer border-top-0 pt-0">
-                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Dismiss File</button>
+                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -392,25 +390,25 @@
 
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow rounded-4">
+        <div class="modal-content border-0 shadow-lg rounded-4">
             <form id="editTaskForm">
                 <input type="hidden" id="editModalTaskId">
                 <div class="modal-header border-bottom border-light">
-                    <h5 class="fw-bold text-dark m-0"><i class="bi bi-pencil-square text-warning me-2"></i>Modify Task parameters</h5>
+                    <h5 class="fw-bold text-primary m-0"><i class="bi bi-pencil-square text-primary me-2"></i>Edit Task Info</h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
                     <div class="mb-3">
                         <label class="form-label text-muted small fw-bold">Task Title <span class="text-danger">*</span></label>
-                        <input type="text" id="editModalTitleInput" class="form-control py-2" required>
+                        <input type="text" id="editModalTitleInput" class="form-control py-2 border-primary border-opacity-20" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Description Criteria</label>
-                        <textarea id="editModalDescInput" class="form-control" rows="3"></textarea>
+                        <label class="form-label text-muted small fw-bold">Description</label>
+                        <textarea id="editModalDescInput" class="form-control border-primary border-opacity-20" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">Assignee Signature <span class="text-danger">*</span></label>
-                        <select id="editModalUserInput" class="form-select py-2" required>
+                        <label class="form-label text-muted small fw-bold">Assign To <span class="text-danger">*</span></label>
+                        <select id="editModalUserInput" class="form-select py-2 border-primary border-opacity-20" required>
                             {% for employee in employees %}
                                 <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
                             {% endfor %}
@@ -418,16 +416,16 @@
                     </div>
                     <div class="row g-3">
                         <div class="col-6">
-                            <label class="form-label text-muted small fw-bold">Priority Matrix <span class="text-danger">*</span></label>
-                            <select id="editModalPriorityInput" class="form-select py-2" required>
+                            <label class="form-label text-muted small fw-bold">Priority <span class="text-danger">*</span></label>
+                            <select id="editModalPriorityInput" class="form-select py-2 border-primary border-opacity-20" required>
                                 <option value="1_HIGH">High</option>
                                 <option value="2_MEDIUM">Medium</option>
                                 <option value="3_LOW">Low</option>
                             </select>
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-muted small fw-bold">Task Progress Status <span class="text-danger">*</span></label>
-                            <select id="editModalStatusInput" class="form-select py-2" required>
+                            <label class="form-label text-muted small fw-bold">Status <span class="text-danger">*</span></label>
+                            <select id="editModalStatusInput" class="form-select py-2 border-primary border-opacity-20" required>
                                 <option value="PENDING">Pending</option>
                                 <option value="PROGRESSING">In Progress</option>
                                 <option value="COMPLETED">Completed</option>
@@ -437,7 +435,7 @@
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-warning btn-sm px-4 py-2 ui-pill-btn fw-bold shadow-sm text-dark">Save Alterations</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn fw-bold shadow-sm text-white">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -445,6 +443,25 @@
 </div>
 
 <style>
+    /* Premium Modern Blue Pill Buttons Styling */
+    .btn-priority-pill {
+        color: #0d6efd;
+        background-color: #ffffff;
+        border: 1px solid rgba(13, 110, 253, 0.2);
+        border-radius: 6px;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-priority-pill:hover {
+        background-color: #ebf2fe;
+        color: #0b5ed7;
+        border-color: #0d6efd;
+    }
+    .btn-check:checked + .btn-priority-pill {
+        color: #ffffff !important;
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.25);
+    }
     .form-control.is-invalid, .form-select.is-invalid {
         border-color: #dc3545 !important;
         background-image: none !important;
@@ -458,7 +475,7 @@
         animation: fadeIn 0.2s ease-out forwards;
     }
     #dashboardTabs .nav-link {
-        color: #475569;
+        color: #4b5563;
         background-color: transparent;
         border: 1px solid transparent;
         transition: all 0.2s ease-in-out;
@@ -466,11 +483,12 @@
     #dashboardTabs .nav-link.active {
         color: #ffffff !important;
         background-color: #0d6efd !important;
-        box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.2), 0 2px 4px -1px rgba(13, 110, 253, 0.1);
+        border-color: #0d6efd !important;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
     }
     #dashboardTabs .nav-link:hover:not(.active) {
-        background-color: #f1f5f9;
-        color: #0f172a;
+        background-color: #ebf2fe;
+        color: #0d6efd;
     }
     .gap-2.5 { gap: 0.65rem !important; }
     .table-responsive::-webkit-scrollbar {
@@ -522,7 +540,7 @@
         const triggerBtn = event.relatedTarget;
         
         document.getElementById('viewModalTitle').innerText = triggerBtn.getAttribute('data-title');
-        document.getElementById('viewModalDesc').innerText = triggerBtn.getAttribute('data-desc') || 'No description summary logged.';
+        document.getElementById('viewModalDesc').innerText = triggerBtn.getAttribute('data-desc') || 'No description provided.';
         document.getElementById('viewModalUser').innerHTML = `<i class="bi bi-person me-2 text-muted"></i>` + triggerBtn.getAttribute('data-user');
         
         const priority = triggerBtn.getAttribute('data-priority');
@@ -539,7 +557,7 @@
         statusBadge.className = 'badge px-3 py-2 rounded-3 fw-semibold w-100 text-center ';
         if(status === 'Completed') statusBadge.classList.add('bg-success', 'bg-opacity-10', 'text-success');
         else if(status === 'In Progress') statusBadge.classList.add('bg-primary', 'bg-opacity-10', 'text-primary');
-        else statusBadge.classList.add('bg-warning', 'bg-opacity-10', 'text-warning-emphasis');
+        else statusBadge.classList.add('bg-secondary', 'bg-opacity-10', 'text-secondary-emphasis');
     });
 
     const editModalEl = document.getElementById('editTaskModal');
@@ -554,36 +572,42 @@
         document.getElementById('editModalStatusInput').value = triggerBtn.getAttribute('data-status');
     });
 
-    // Intercept Edit Task Form Submissions Async
+    // Form Submission Handler: Save Task Changes to Database
     document.getElementById('editTaskForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const taskId = document.getElementById('editModalTaskId').value;
+        const employeeId = document.getElementById('editModalUserInput').value;
         
         fetch(`/api/tasks/${taskId}/update/`, {
-            method: 'POST', // standard endpoint data push mapping override style
+            method: 'POST',
             headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
             body: JSON.stringify({
                 title: document.getElementById('editModalTitleInput').value.trim(),
                 description: document.getElementById('editModalDescInput').value.trim(),
-                user_id: document.getElementById('editModalUserInput').value,
+                user_id: employeeId,
+                assigned_to: employeeId, // Added field mapping redundancy to match standard model requirements
                 priority: document.getElementById('editModalPriorityInput').value,
                 status: document.getElementById('editModalStatusInput').value
             })
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('Network failure during updating.');
+            return res.json();
+        })
         .then(data => {
-            if (data.status === 'success') {
-                showToast('Task configurations modified and updated successfully.');
-                bootstrap.Modal.getInstance(editModalEl).hide();
-                setTimeout(() => location.reload(), 1200);
+            if (data.status === 'success' || data.success) {
+                showToast('Task updated successfully.');
+                const modalInstance = bootstrap.Modal.getInstance(editModalEl);
+                if (modalInstance) modalInstance.hide();
+                setTimeout(() => location.reload(), 1000);
             } else {
-                showToast(data.error || 'Failed to apply update.', 'danger');
+                showToast(data.error || 'Failed to save changes.', 'danger');
             }
         })
-        .catch(() => showToast('Error linking to network core databases.', 'danger'));
+        .catch(() => showToast('Error saving updates to the database.', 'danger'));
     });
 
-    // Dynamic Live Filter for Assigned Tasks
+    // Search Engine Filter Functionality
     document.getElementById('taskSearchInput').addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const rows = document.querySelectorAll('.task-searchable-row');
@@ -623,14 +647,14 @@
         } else if (blocks.length === 1 && blocks[0].length > 0) {
             initials = blocks[0][0].toUpperCase();
         }
-        const palette = ['#1e293b', '#475569', '#334155'];
+        const palette = ['#0d6efd', '#0b5ed7', '#1e40af'];
         const randomColor = palette[Math.floor(Math.random() * palette.length)];
         const avatarNode = document.getElementById('adminAvatarNode');
         if(avatarNode) { avatarNode.innerText = initials || "A"; avatarNode.style.backgroundColor = randomColor; }
     })();
 
     (function mapEmployeeAvatarPalettes() {
-        const structuralPalettes = ['#0d6efd', '#198754', '#dc3545', '#0dcaf0', '#6f42c1', '#fd7e14', '#343a40'];
+        const structuralPalettes = ['#0d6efd', '#0284c7', '#2563eb', '#0369a1', '#1d4ed8', '#0f766e', '#4338ca'];
         document.querySelectorAll('.roster-avatar').forEach((avatar, index) => {
             const signatureIndex = index % structuralPalettes.length;
             avatar.style.backgroundColor = structuralPalettes[signatureIndex];
@@ -644,7 +668,7 @@
         const confirmPassword = document.getElementById('new_password_confirm').value;
 
         if (password !== confirmPassword) {
-            showToast('Passphrases do not match. Review entries.', 'danger');
+            showToast('Passwords do not match.', 'danger');
             return;
         }
 
@@ -669,7 +693,7 @@
         .then(res => res.json())
         .then(data => {
             if(data.status === 'success') { 
-                showToast('Employee account established successfully.');
+                showToast('Employee account created successfully.');
                 setTimeout(() => location.reload(), 1200);
             } else { 
                 showToast(data.error, 'danger'); 
@@ -725,7 +749,7 @@
         .then(res => res.json())
         .then(data => {
             if(data.status === 'success') { 
-                showToast('Work order dispatched and assigned successfully.');
+                showToast('Task assigned successfully.');
                 setTimeout(() => location.reload(), 1200);
             } else { 
                 showToast(data.error, 'danger'); 
@@ -768,14 +792,14 @@
                 if(data.status === 'success') { 
                     const row = document.getElementById(`admin-task-row-${taskId}`);
                     if(row) row.remove();
-                    showToast('Assigned log entry removed.');
+                    showToast('Task deleted successfully.');
                 } else {
-                    showToast(data.error || 'Failed to remove the entry.', 'danger');
+                    showToast(data.error || 'Failed to delete task.', 'danger');
                 }
             })
             .catch(err => {
                 console.error(err);
-                showToast('A network execution error occurred.', 'danger');
+                showToast('Could not connect to the server.', 'danger');
             });
         }
     }
