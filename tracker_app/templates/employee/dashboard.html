@@ -3,13 +3,12 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block layout_container %}
-<div class="container-fluid p-0 min-vh-100 style-workspace" style="background-color: #f8fafc; font-family: 'Inter', sans-serif;">
+<div class="container-fluid p-0 min-vh-100" style="background-color: #f1f5f9; font-family: 'Inter', sans-serif;">
     
-    <!-- Top Navigation Header -->
-    <nav class="navbar navbar-expand bg-white border-bottom px-4 py-3 mb-4" style="border-color: #e2e8f0 !important;">
+    <nav class="navbar navbar-expand bg-white border-bottom border-secondary border-opacity-10 shadow-sm px-4 py-3 mb-5">
         <div class="container py-1">
-            <span class="navbar-brand fw-bold text-dark d-flex align-items-center gap-2 m-0 fs-5">
-                <i class="bi bi-cpu-fill text-primary animate-pulse" style="color: #1d4ed8 !important;"></i> Dashboard
+            <span class="navbar-brand fw-bold text-dark d-flex align-items-center gap-2 m-0 fs-5" style="letter-spacing: -0.5px;">
+                <i class="bi bi-cpu-fill text-primary animate-pulse" style="color: #1d4ed8 !important;"></i> Employee Portal
             </span>
             
             <div class="dropdown ms-auto">
@@ -24,57 +23,59 @@
         </div>
     </nav>
 
-    <!-- Main Content Frame -->
     <div class="container px-3 px-md-4">
         
-        <!-- Dashboard Header Welcome -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-4 mb-4">
-            <div>
-                <h2 class="fw-bold text-dark tracking-tight mb-1" style="letter-spacing: -1px;">Welcome back, {{ request.user.first_name }}</h2>
-                <p class="text-muted small mb-0"><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 me-1">● Live</span> Tracking current tasks and activity in real-time.</p>
+        <div class="row align-items-center g-4 mb-5 p-4 p-md-5 rounded-4 text-white shadow" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
+            <div class="col-md-8 text-center text-md-start">
+                <h1 class="display-6 fw-bold mb-2" style="letter-spacing: -1.5px; line-height: 1.2;">Welcome back, {{ request.user.first_name }}!</h1>
+                <p class="fs-6 fw-normal opacity-90 mb-0">
+                    <span class="badge bg-success rounded-pill px-2.5 py-1 me-2 small fw-bold" style="font-size: 11px;"><span class="spinner-grow spinner-grow-sm me-1" style="width: 7px; height: 7px;"></span>Live</span> 
+                    Collaborate, build impact, and track your operational work updates in real-time.
+                </p>
             </div>
-            <button class="btn btn-primary btn-sm px-4 py-2.5 shadow-sm fw-semibold rounded-3 btn-hover-blue" data-bs-toggle="modal" data-bs-target="#allTasksModal" style="background-color: #1d4ed8; border-color: #1d4ed8; font-size: 13px;">
-                <i class="bi bi-folder-fill me-1"></i> View All Tasks
-            </button>
+            <div class="col-md-4 text-center text-md-end">
+                <button class="btn btn-light btn-lg shadow-sm fw-bold px-4 py-2.5 rounded-3 border-0 transition-all text-primary" data-bs-toggle="modal" data-bs-target="#allTasksModal" style="font-size: 14px; color: #1d4ed8 !important;">
+                    <i class="bi bi-folder-fill me-1"></i> Full Task History
+                </button>
+            </div>
         </div>
 
-        <!-- METRICS COUNTERS OVERVIEW -->
-        <div class="row g-3 mb-4">
+        <div class="row g-3 mb-5">
             <div class="col-6 col-lg-3">
-                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in" style="border-color: #e2e8f0 !important;">
-                    <span class="text-secondary small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">Total Tasks</span>
+                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in border-light">
+                    <span class="text-muted small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">Total Tasks</span>
                     <h2 class="fw-bold mb-1 text-dark" id="metric-total" style="letter-spacing: -0.5px;">{{ absolute_history.count }}</h2>
-                    <div class="progress rounded-pill mt-2" style="height: 4px; background-color: #f1f5f9;">
-                        <div class="progress-bar bg-primary rounded-pill" style="width: 100%"></div>
+                    <div class="progress rounded-pill mt-2" style="height: 5px; background-color: #f1f5f9;">
+                        <div class="progress-bar rounded-pill" style="width: 100%; background-color: #1d4ed8;"></div>
                     </div>
                     <i class="bi bi-layers position-absolute text-light opacity-25" style="font-size: 3.5rem; right: -5px; bottom: -15px; pointer-events: none;"></i>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in" style="border-color: #e2e8f0 !important;">
-                    <span class="text-secondary small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">Pending Tasks</span>
+                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in border-light">
+                    <span class="text-muted small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">Pending Tasks</span>
                     <h2 class="fw-bold mb-1 text-warning" id="metric-pending" style="letter-spacing: -0.5px;">{{ stats.pending }}</h2>
-                    <div class="progress rounded-pill mt-2" style="height: 4px; background-color: #f1f5f9;">
+                    <div class="progress rounded-pill mt-2" style="height: 5px; background-color: #f1f5f9;">
                         <div class="progress-bar bg-warning rounded-pill" style="width: calc(({{ stats.pending }} / {{ absolute_history.count|default:1 }}) * 100%)"></div>
                     </div>
                     <i class="bi bi-pause-circle position-absolute text-light opacity-25" style="font-size: 3.5rem; right: -5px; bottom: -15px; pointer-events: none;"></i>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in" style="border-color: #e2e8f0 !important;">
-                    <span class="text-secondary small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">In Progress</span>
+                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in border-light">
+                    <span class="text-muted small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">In Progress</span>
                     <h2 class="fw-bold mb-1 text-info" id="metric-progressing" style="letter-spacing: -0.5px;">{{ stats.progressing }}</h2>
-                    <div class="progress rounded-pill mt-2" style="height: 4px; background-color: #f1f5f9;">
+                    <div class="progress rounded-pill mt-2" style="height: 5px; background-color: #f1f5f9;">
                         <div class="progress-bar bg-info rounded-pill" style="width: calc(({{ stats.progressing }} / {{ absolute_history.count|default:1 }}) * 100%)"></div>
                     </div>
                     <i class="bi bi-lightning-charge position-absolute text-light opacity-25" style="font-size: 3.5rem; right: -5px; bottom: -15px; pointer-events: none;"></i>
                 </div>
             </div>
             <div class="col-6 col-lg-3">
-                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in" style="border-color: #e2e8f0 !important;">
-                    <span class="text-secondary small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">Completed</span>
+                <div class="bg-white p-4 rounded-4 shadow-sm border position-relative overflow-hidden h-100 animate-fade-in border-light">
+                    <span class="text-muted small d-block mb-1 fw-bold text-uppercase tracking-wider" style="font-size: 11px;">Completed</span>
                     <h2 class="fw-bold mb-1 text-success" id="metric-completed" style="letter-spacing: -0.5px;">{{ stats.completed }}</h2>
-                    <div class="progress rounded-pill mt-2" style="height: 4px; background-color: #f1f5f9;">
+                    <div class="progress rounded-pill mt-2" style="height: 5px; background-color: #f1f5f9;">
                         <div class="progress-bar bg-success rounded-pill" style="width: calc(({{ stats.completed }} / {{ absolute_history.count|default:1 }}) * 100%)"></div>
                     </div>
                     <i class="bi bi-check-circle position-absolute text-light opacity-25" style="font-size: 3.5rem; right: -5px; bottom: -15px; pointer-events: none;"></i>
@@ -82,20 +83,19 @@
             </div>
         </div>
 
-        <!-- CHARTS DATA VISUALIZATION LAYER -->
-        <div class="bg-white p-4 rounded-4 shadow-sm border mb-4 animate-fade-in" style="border-color: #e2e8f0 !important;">
+        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm border mb-5 animate-fade-in border-light">
             <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3" style="border-color: #f1f5f9 !important;">
                 <h5 class="fw-bold text-dark mb-0 tracking-tight">
-                    <i class="bi bi-pie-chart-fill me-2 text-primary"></i>Task Visual Breakdowns
+                    <i class="bi bi-pie-chart-fill me-2" style="color: #1d4ed8;"></i>Visual Analysis Breakdown
                 </h5>
-                <span class="badge bg-light text-muted border px-3 py-1.5 rounded-3 fw-medium" style="font-size: 11px; border-color: #e2e8f0 !important;">Live Charts</span>
+                <span class="badge bg-light text-muted border border-secondary border-opacity-10 px-3 py-1.5 rounded-3 fw-medium" style="font-size: 11px;">Live Performance Analytics</span>
             </div>
 
             <div class="row g-4 justify-content-center">
                 <div class="col-12 col-md-6 border-end-md" style="border-color: #f1f5f9 !important;">
                     <div class="px-md-3">
-                        <span class="text-secondary small d-block mb-3 fw-bold text-uppercase tracking-wider" style="font-size: 11px; letter-spacing: 0.5px;">Tasks by Priority</span>
-                        <div class="d-flex justify-content-center align-items-center position-relative" style="height: 200px;">
+                        <span class="text-secondary small d-block mb-3 fw-bold text-uppercase tracking-wider" style="font-size: 11px; letter-spacing: 0.5px;">Assigned Tasks by Priority</span>
+                        <div class="d-flex justify-content-center align-items-center position-relative" style="height: 220px;">
                             <canvas id="taskPriorityBarChart"></canvas>
                         </div>
                     </div>
@@ -103,8 +103,8 @@
 
                 <div class="col-12 col-md-6">
                     <div class="px-md-3">
-                        <span class="text-secondary small d-block mb-3 fw-bold text-uppercase tracking-wider" style="font-size: 11px; letter-spacing: 0.5px;">Tasks by Progress Status</span>
-                        <div class="d-flex justify-content-center align-items-center position-relative" style="height: 200px;">
+                        <span class="text-secondary small d-block mb-3 fw-bold text-uppercase tracking-wider" style="font-size: 11px; letter-spacing: 0.5px;">Workspace Workflow Status</span>
+                        <div class="d-flex justify-content-center align-items-center position-relative" style="height: 220px;">
                             <canvas id="taskStatusPieChart"></canvas>
                         </div>
                     </div>
@@ -112,30 +112,29 @@
             </div>
         </div>
 
-        <!-- ACTIVE TASKS TABLE CONTAINER -->
-        <div class="bg-white border shadow-sm rounded-4 mb-5 animate-fade-in" style="border-color: #e2e8f0 !important;">
-            <div class="d-flex justify-content-between align-items-center p-4 border-bottom" style="border-color: #e2e8f0 !important;">
+        <div class="bg-white border shadow-sm rounded-4 mb-5 animate-fade-in border-light overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center p-4 bg-light border-bottom border-light">
                 <h5 class="fw-bold text-dark mb-0 tracking-tight">
-                    <i class="bi bi-list-columns-reverse me-2 text-primary" style="color: #1d4ed8 !important;"></i>Active Task List
+                    <i class="bi bi-list-columns-reverse me-2" style="color: #1d4ed8 !important;"></i>Current Task Queue
                 </h5>
-                <span class="badge bg-light text-dark border px-3 py-2 rounded-3 fw-medium" style="font-size: 12px; border-color: #e2e8f0 !important;">Current Work Queue</span>
+                <span class="badge bg-white text-secondary border border-secondary border-opacity-20 px-3 py-2 rounded-3 fw-semibold small">Active Assignment Panel</span>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="activeTasksTable">
-                    <thead class="table-light" style="background-color: #f8fafc !important; border-bottom: 1px solid #e2e8f0 !important;">
-                        <tr class="text-secondary small text-uppercase fw-bold tracking-wider" style="font-size: 11px;">
-                            <th class="ps-4 py-3.5" style="width: 35%;">Task Name &amp; Details</th>
+                <table class="table align-middle mb-0" id="activeTasksTable" style="border-collapse: separate; border-spacing: 0 8px;">
+                    <thead>
+                        <tr class="text-secondary small text-uppercase fw-bold tracking-wider" style="font-size: 11px; background-color: #f8fafc;">
+                            <th class="ps-4 py-3.5" style="width: 40%;">Task Details</th>
                             <th class="py-3.5" style="width: 15%;">Priority</th>
-                            <th class="py-3.5" style="width: 18%;">Status</th>
-                            <th class="py-3.5" style="width: 14%;">Progress Bar</th>
+                            <th class="py-3.5" style="width: 15%;">Status Label</th>
+                            <th class="py-3.5" style="width: 12%;">Progress</th>
                             <th class="text-end pe-4 py-3.5" style="width: 18%;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="activeTaskTableBody">
+                    <tbody id="activeTaskTableBody" class="bg-white">
                         {% if tasks %}
                             {% for task in tasks %}
-                            <tr class="border-bottom id-task-wrapper-node transition-table-row" id="task-card-{{ task.id }}" style="border-color: #f1f5f9 !important;">
+                            <tr class="id-task-wrapper-node transition-table-row border-bottom" id="task-card-{{ task.id }}" style="border-color: #f1f5f9 !important;">
                                 <td class="ps-4 py-3.5">
                                     <div class="d-flex flex-column text-wrap">
                                         <span class="fw-bold text-dark mb-1 fs-6 tracking-tight">{{ task.title }}</span>
@@ -154,24 +153,24 @@
                                 </td>
                                 <td class="py-3.5">
                                     <div style="max-width: 100px;">
-                                        <div class="progress rounded-pill animate-fade-in" style="height: 10px; background-color: #e2e8f0;">
+                                        <div class="progress rounded-pill animate-fade-in" style="height: 7px; background-color: #e2e8f0;">
                                             <div id="status-bar-{{ task.id }}" class="progress-bar rounded-pill transition-bar-color w-100 {% if task.status == 'PROGRESSING' %}bg-primary{% else %}bg-warning{% endif %}" style="transition: background-color 0.4s ease;"></div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="text-end pe-4 py-3.5">
                                     <div class="d-flex gap-2 justify-content-end align-items-center">
-                                        <button type="button" class="btn btn-light btn-sm border bg-white text-dark rounded-3 px-2.5 py-1.5 fw-semibold shadow-sm btn-hover-blue" style="border-color: #cbd5e1 !important; font-size: 12px;"
+                                        <button type="button" class="btn btn-light btn-sm border bg-white text-secondary rounded-3 px-2.5 py-1.5 fw-semibold shadow-sm action-btn-hover" style="border-color: #cbd5e1 !important; font-size: 12px;"
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#viewTaskDetailsModal"
                                                 data-bs-title="{{ task.title }}"
                                                 data-bs-desc="{{ task.description }}"
                                                 data-bs-priority="{{ task.get_priority_display }}"
                                                 data-bs-status="{{ task.get_status_display }}">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="bi bi-eye-fill"></i>
                                         </button>
                                         
-                                        <select class="form-select form-select-sm border bg-white rounded-3 shadow-sm py-1.5 ps-2 pe-4 text-dark fw-bold" style="border-color: #cbd5e1 !important; font-size: 12px; max-width: 130px; -webkit-appearance: select; -moz-appearance: select; appearance: select;" onchange="updateTaskStatus('{{ task.id }}', this.value)">
+                                        <select class="form-select form-select-sm border bg-white rounded-3 shadow-sm py-1.5 ps-2 pe-4 text-dark fw-bold" style="border-color: #cbd5e1 !important; font-size: 12px; max-width: 130px;" onchange="updateTaskStatus('{{ task.id }}', this.value)">
                                             <option value="PENDING" {% if task.status == 'PENDING' %}selected{% endif %}>Pending</option>
                                             <option value="PROGRESSING" {% if task.status == 'PROGRESSING' %}selected{% endif %}>In Progress</option>
                                             <option value="COMPLETED">Complete ✓</option>
@@ -192,66 +191,64 @@
     </div>
 </div>
 
-<!-- Modal Dialog Layer 1: View Single Task Details -->
 <div class="modal fade" id="viewTaskDetailsModal" tabindex="-1" aria-labelledby="viewTaskDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 bg-light p-4 shadow-sm" style="border-radius: 20px 20px 0 0; background-color: #f8fafc !important; border-bottom: 1px solid #e2e8f0 !important;">
-                <h5 class="modal-title fw-bold text-dark tracking-tight" id="viewTaskDetailsModalLabel"><i class="bi bi-info-circle-fill text-primary me-2" style="color: #1d4ed8 !important;"></i>Task Information</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-header border-bottom-0 p-4 text-white rounded-top-4" style="background: linear-gradient(145deg, #1d4ed8, #3b82f6);">
+                <h5 class="modal-title fw-bold tracking-tight" id="viewTaskDetailsModalLabel"><i class="bi bi-info-circle-fill me-2"></i>Task Workspace Info</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4 bg-white">
                 <div class="mb-4">
-                    <label class="text-secondary small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 11px;">Task Title</label>
-                    <h5 class="fw-bold text-dark mb-0 tracking-tight" id="inspectTaskTitle">---</h5>
+                    <label class="text-muted small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 10px;">Task Title</label>
+                    <h4 class="fw-bold text-dark mb-0 tracking-tight" id="inspectTaskTitle">---</h4>
                 </div>
                 <div class="row g-3 mb-4">
                     <div class="col-6">
-                        <label class="text-secondary small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 11px;">Priority Level</label>
-                        <div><span class="badge px-3 py-2 fw-semibold rounded-3 d-inline-block" id="inspectTaskPriority" style="font-size: 12px;">---</span></div>
+                        <label class="text-muted small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 10px;">Priority Level</label>
+                        <div><span class="badge px-3 py-2 fw-semibold rounded-3 d-block text-center" id="inspectTaskPriority" style="font-size: 12px;">---</span></div>
                     </div>
                     <div class="col-6">
-                        <label class="text-secondary small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 11px;">Status</label>
-                        <div><span class="badge px-3 py-2 fw-semibold rounded-3 d-inline-block" id="inspectTaskStatus" style="font-size: 12px;">---</span></div>
+                        <label class="text-muted small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 10px;">Current Status</label>
+                        <div><span class="badge px-3 py-2 fw-semibold rounded-3 d-block text-center" id="inspectTaskStatus" style="font-size: 12px;">---</span></div>
                     </div>
                 </div>
                 <div>
-                    <label class="text-secondary small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 11px;">Task Description</label>
-                    <div class="bg-light p-3 rounded-3 text-dark text-wrap border" id="inspectTaskDesc" style="white-space: pre-wrap; font-size: 14px; min-height: 80px; border-color: #e2e8f0 !important; background-color: #f8fafc !important;">---</div>
+                    <label class="text-muted small text-uppercase fw-bold tracking-wider mb-1" style="font-size: 10px;">Functional Description</label>
+                    <div class="bg-light p-3 rounded-3 text-dark text-wrap border border-secondary border-opacity-10" id="inspectTaskDesc" style="white-space: pre-wrap; font-size: 14px; min-height: 90px; background-color: #f8fafc !important;">---</div>
                 </div>
             </div>
-            <div class="modal-footer border-0 p-3 bg-light" style="border-radius: 0 0 20px 20px; background-color: #f8fafc !important; border-top: 1px solid #e2e8f0 !important;">
-                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 rounded-3 text-dark fw-medium bg-white border btn-hover-blue" data-bs-dismiss="modal" style="border-color: #cbd5e1 !important;">Close Window</button>
+            <div class="modal-footer border-top-0 p-3 bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 rounded-3 text-dark fw-bold bg-white border" data-bs-dismiss="modal" style="border-color: #cbd5e1 !important; font-size: 13px;">Close View</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Dialog Layer 2: Full Task History Panel -->
 <div class="modal fade" id="allTasksModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 bg-light p-4 shadow-sm" style="border-radius: 20px 20px 0 0; background-color: #f8fafc !important; border-bottom: 1px solid #e2e8f0 !important;">
-                <h5 class="modal-title fw-bold text-dark tracking-tight"><i class="bi bi-folder2-open me-2 text-primary" style="color: #1d4ed8 !important;"></i> Full Task History</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-header border-bottom-0 p-4 text-white rounded-top-4" style="background: linear-gradient(145deg, #1d4ed8, #3b82f6);">
+                <h5 class="modal-title fw-bold tracking-tight"><i class="bi bi-folder2-open me-2"></i> Comprehensive Account Task Logs</h5>
+                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0 bg-white">
-                <div class="table-responsive" style="max-height: 450px;">
+                <div class="table-responsive" style="max-height: 420px;">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light sticky-top" style="background-color: #f8fafc !important; border-bottom: 1px solid #e2e8f0 !important;">
-                            <tr class="text-secondary small text-uppercase fw-semibold tracking-wider" style="font-size: 11px;">
-                                <th class="ps-4 py-3">Task Details</th>
-                                <th class="py-3">Priority</th>
-                                <th class="py-3">Status</th>
-                                <th class="text-end pe-4 py-3">Change Status</th>
+                        <thead>
+                            <tr class="text-secondary small text-uppercase fw-bold tracking-wider" style="font-size: 11px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                <th class="ps-4 py-3">Task Specification & Label</th>
+                                <th class="py-3">Priority Level</th>
+                                <th class="py-3">Current Status</th>
+                                <th class="text-end pe-4 py-3">Quick Transition Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for h_task in absolute_history %}
-                            <tr class="border-bottom" style="border-color: #f1f5f9 !important;">
+                            <tr class="border-bottom border-light">
                                 <td class="ps-4 py-3">
                                     <span class="fw-bold text-dark d-block mb-1 tracking-tight" style="font-size: 14px;">{{ h_task.title }}</span>
-                                    <small class="text-muted d-block" style="font-size: 12px;">{{ h_task.description|truncatechars:50 }}</small>
+                                    <small class="text-muted d-block text-truncate" style="font-size: 12px; max-width: 320px;">{{ h_task.description|truncatechars:50 }}</small>
                                 </td>
                                 <td class="py-3">
                                     <span class="badge {% if h_task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif h_task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2.5 py-1.5 fw-semibold rounded-3" style="font-size: 11px;">
@@ -264,7 +261,7 @@
                                     </span>
                                 </td>
                                 <td class="text-end pe-4 py-3">
-                                    <select class="form-select form-select-sm border bg-white rounded-3 w-auto d-inline-block fw-medium text-dark" style="border-color: #cbd5e1 !important; font-size: 12px; -webkit-appearance: select; appearance: select;" onchange="updateTaskStatus('{{ h_task.id }}', this.value)">
+                                    <select class="form-select form-select-sm border bg-white rounded-3 w-auto d-inline-block fw-bold text-dark" style="border-color: #cbd5e1 !important; font-size: 12px;" onchange="updateTaskStatus('{{ h_task.id }}', this.value)">
                                         <option value="PENDING" {% if h_task.status == 'PENDING' %}selected{% endif %}>Pending</option>
                                         <option value="PROGRESSING" {% if h_task.status == 'PROGRESSING' %}selected{% endif %}>In Progress</option>
                                         <option value="COMPLETED" {% if h_task.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
@@ -276,8 +273,8 @@
                     </table>
                 </div>
             </div>
-            <div class="modal-footer border-0 p-3 bg-light" style="border-radius: 0 0 20px 20px; background-color: #f8fafc !important; border-top: 1px solid #e2e8f0 !important;">
-                <button type="button" class="btn btn-primary btn-sm px-4 py-2.5 fw-semibold rounded-3 shadow-sm btn-hover-blue" onclick="location.reload()" style="background-color: #1d4ed8; border-color: #1d4ed8; font-size: 13px;">Refresh Page</button>
+            <div class="modal-footer border-top-0 p-3 bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-3 shadow-sm" onclick="location.reload()" style="background-color: #1d4ed8; border-color: #1d4ed8; font-size: 13px;">Sync Workspace Updates</button>
             </div>
         </div>
     </div>
@@ -290,19 +287,19 @@
         }
     }
     .transition-table-row {
+        background-color: #ffffff;
         transition: background-color 0.15s ease;
     }
     .transition-table-row:hover {
         background-color: #f8fafc !important;
     }
     
-    /* Interactive Button Blue States */
-    .btn-hover-blue:hover {
+    .action-btn-hover {
+        transition: all 0.2s ease;
+    }
+    .action-btn-hover:hover {
         background-color: #1d4ed8 !important;
         border-color: #1d4ed8 !important;
-        color: #ffffff !important;
-    }
-    .btn-hover-blue:hover i {
         color: #ffffff !important;
     }
     
@@ -349,10 +346,10 @@
         } else if (blocks.length === 1 && blocks[0].length > 0) {
             initials = blocks[0][0].toUpperCase();
         }
-        const palette = ['#1d4ed8', '#059669', '#6d28d9', '#db2777', '#0e7490'];
+        const palette = ['#1d4ed8', '#1e3a8a', '#2563eb', '#3b82f6'];
         const randomColor = palette[Math.floor(Math.random() * palette.length)];
         const avatarNode = document.getElementById('userAvatarNode');
-        if(avatarNode) { avatarNode.innerText = initials; avatarNode.style.backgroundColor = randomColor; }
+        if(avatarNode) { avatarNode.innerText = initials || "U"; avatarNode.style.backgroundColor = randomColor; }
     })();
 
     // Init Chart 1: Bar Chart for Priority Counts
@@ -363,7 +360,7 @@
             labels: ['High', 'Medium', 'Low'],
             datasets: [{
                 data: [priorityHighCount, priorityMedCount, priorityLowCount],
-                backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6'],
+                backgroundColor: ['#dc3545', '#eab308', '#16a34a'],
                 borderRadius: 6,
                 barThickness: 28
             }]
@@ -387,7 +384,7 @@
             labels: ['Pending', 'In Progress', 'Completed'],
             datasets: [{
                 data: [statsCache.pending, statsCache.progressing, statsCache.completed],
-                backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'],
+                backgroundColor: ['#eab308', '#1d4ed8', '#16a34a'],
                 borderWidth: 2,
                 borderColor: '#ffffff'
             }]
@@ -398,7 +395,7 @@
             plugins: { 
                 legend: { 
                     position: 'right', 
-                    labels: { boxWidth: 12, font: { size: 11, weight: '500', family: "'Inter', sans-serif" } } 
+                    labels: { boxWidth: 12, font: { size: 11, weight: '600', family: "'Inter', sans-serif" } } 
                 } 
             }
         }
@@ -415,14 +412,14 @@
                 const priority = button.getAttribute('data-bs-priority');
                 const priorityNode = document.getElementById('inspectTaskPriority');
                 priorityNode.innerText = priority;
-                priorityNode.className = "badge px-3 py-2 rounded-3 fw-semibold " + 
-                    (priority === 'High' ? 'bg-danger bg-opacity-10 text-danger' : priority === 'Medium' ? 'bg-warning bg-opacity-10 text-warning-emphasis' : 'bg-info bg-opacity-10 text-info-emphasis');
+                priorityNode.className = "badge px-3 py-2 rounded-3 fw-semibold text-uppercase d-block text-center " + 
+                    (priority === 'High' ? 'bg-danger text-white' : priority === 'Medium' ? 'bg-warning text-dark' : 'bg-success text-white');
 
                 const status = button.getAttribute('data-bs-status');
                 const statusNode = document.getElementById('inspectTaskStatus');
                 statusNode.innerText = status;
-                statusNode.className = "badge px-3 py-2 rounded-3 fw-semibold " + 
-                    (status === 'In Progress' ? 'bg-primary bg-opacity-10 text-primary' : 'bg-warning bg-opacity-10 text-warning-emphasis');
+                statusNode.className = "badge px-3 py-2 rounded-3 fw-semibold text-uppercase d-block text-center " + 
+                    (status === 'In Progress' ? 'bg-primary text-white' : 'bg-warning text-dark');
             });
         }
     });
