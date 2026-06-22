@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" style="font-family: 'Inter', sans-serif;">
     <nav class="navbar navbar-expand bg-white border-bottom shadow-sm px-4 py-3 mb-5">
         <div class="container py-1">
             <span class="navbar-brand fw-bold text-dark d-flex align-items-center gap-2 m-0 fs-5">
@@ -59,7 +59,7 @@
         </ul>
 
         <div class="collapse mb-5" id="createUserCollapse">
-            <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4">
+            <div class="dashboard-metric-card border border-primary border-opacity-20 shadow-sm p-4 bg-white rounded-4">
                 <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-gear me-2"></i>New Account Form</h5>
                 <form id="createUserForm" class="row g-3">
                     <div class="col-md-6">
@@ -121,9 +121,10 @@
         <div class="tab-content" id="dashboardTabsContent">
             
             <div class="tab-pane fade show active animate-fade-in" id="operationsPane" role="tabpanel" aria-labelledby="operations-tab">
-                <div class="row g-4 mb-5">
-                    <div class="col-lg-5">
-                        <div class="dashboard-metric-card shadow-sm p-4 border h-100">
+                <div class="row g-4">
+                    
+                    <div class="col-12">
+                        <div class="dashboard-metric-card shadow-sm p-4 border bg-white rounded-4">
                             <h5 class="fw-bold text-dark mb-3"><i class="bi bi-send-plus-fill me-2 text-primary"></i>Assign a New Task</h5>
                             
                             <div id="validationWarningCard" class="alert alert-danger border-danger border-opacity-20 rounded-3 d-none mb-4 p-3 shadow-sm animate-fade-in">
@@ -134,50 +135,59 @@
                             </div>
 
                             <form id="assignTaskForm" novalidate>
-                                <div class="mb-4">
-                                    <label class="form-label text-muted small fw-semibold">Task Title <span class="text-danger fw-bold">*</span></label>
-                                    <input type="text" id="task_title" class="form-control bg-light border py-2.5 rounded-3" placeholder="What needs to be done?" required>
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
-                                    <textarea id="task_desc" class="form-control bg-light border rounded-3" rows="4" placeholder="Add additional details or notes here..."></textarea>
-                                </div>
-                                
-                                <div class="mb-4">
-                                    <label class="form-label text-muted small fw-semibold">Assign To <span class="text-danger fw-bold">*</span></label>
-                                    <select id="task_user" class="form-select bg-light border py-2.5 rounded-3" required>
-                                        <option value="">-- Choose an employee --</option>
-                                        {% for employee in employees %}
-                                            <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                
-                                <div class="mb-5">
-                                    <label class="form-label text-muted small fw-semibold d-block mb-3">Set Priority <span class="text-danger fw-bold">*</span></label>
-                                    <div class="btn-group w-100" role="group">
-                                        <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
-                                        <label class="btn btn-outline-danger py-2.5 fw-semibold small" for="btn_high">High</label>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small fw-semibold">Task Title <span class="text-danger fw-bold">*</span></label>
+                                        <input type="text" id="task_title" class="form-control bg-light border py-2 rounded-3" placeholder="What needs to be done?" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small fw-semibold">Assign To <span class="text-danger fw-bold">*</span></label>
+                                        <select id="task_user" class="form-select bg-light border py-2 rounded-3" required>
+                                            <option value="">-- Choose an employee --</option>
+                                            {% for employee in employees %}
+                                                <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label text-muted small fw-semibold">Task Description <span class="text-muted fw-normal font-monospace" style="font-size: 11px;">(Optional)</span></label>
+                                        <textarea id="task_desc" class="form-control bg-light border rounded-3" rows="2" placeholder="Add additional details or notes here..."></textarea>
+                                    </div>
+                                    <div class="col-md-6 d-flex flex-column justify-content-end">
+                                        <label class="form-label text-muted small fw-semibold d-block mb-2">Set Priority <span class="text-danger fw-bold">*</span></label>
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check" name="priority_opts" id="btn_high" value="1_HIGH" autocomplete="off">
+                                            <label class="btn btn-outline-danger py-2 fw-semibold small" for="btn_high">High</label>
 
-                                        <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
-                                        <label class="btn btn-outline-warning py-2.5 fw-semibold small" for="btn_medium">Medium</label>
+                                            <input type="radio" class="btn-check" name="priority_opts" id="btn_medium" value="2_MEDIUM" autocomplete="off">
+                                            <label class="btn btn-outline-warning py-2 fw-semibold small" for="btn_medium">Medium</label>
 
-                                        <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
-                                        <label class="btn btn-outline-info py-2.5 fw-semibold small" for="btn_low">Low</label>
+                                            <input type="radio" class="btn-check" name="priority_opts" id="btn_low" value="3_LOW" autocomplete="off" checked>
+                                            <label class="btn btn-outline-info py-2 fw-semibold small" for="btn_low">Low</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-dark w-100 py-2 ui-pill-btn fw-bold shadow-sm">Assign Task</button>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-dark w-100 py-3 ui-pill-btn fw-bold shadow-sm">Assign Task</button>
                             </form>
                         </div>
                     </div>
 
-                    <div class="col-lg-7">
-                        <div class="dashboard-metric-card shadow-sm p-4 border h-100">
-                            <h5 class="fw-bold text-dark mb-4"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0" style="border-collapse: separate; border-spacing: 0 10px;">
-                                    <thead>
+                    <div class="col-12 mb-5">
+                        <div class="dashboard-metric-card shadow-sm p-4 border bg-white rounded-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                                <h5 class="fw-bold text-dark m-0"><i class="bi bi-layer-forward me-2 text-success"></i>All Assigned Tasks</h5>
+                                
+                                <div class="input-group" style="max-width: 350px;">
+                                    <span class="input-group-text bg-light border-end-0 text-muted py-2"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="taskSearchInput" class="form-control bg-light border-start-0 py-2 small" placeholder="Search by name, task title...">
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                                <table class="table table-hover align-middle mb-0" id="tasksTable" style="border-collapse: separate; border-spacing: 0 10px;">
+                                    <thead class="sticky-top bg-white" style="z-index: 5;">
                                         <tr class="text-muted small text-uppercase">
                                             <th class="border-0 pb-2 ps-3">Task Details</th>
                                             <th class="border-0 pb-2">Assigned To</th>
@@ -189,13 +199,13 @@
                                     <tbody>
                                         {% if all_tasks %}
                                             {% for task in all_tasks %}
-                                            <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm">
-                                                <td class="text-wrap ps-3 py-3 rounded-start-3" style="max-width: 160px;">
-                                                    <span class="fw-bold text-dark mb-0 d-block">{{ task.title }}</span>
-                                                    <small class="text-muted d-block text-truncate">{{ task.description }}</small>
+                                            <tr id="admin-task-row-{{ task.id }}" class="bg-light rounded-3 shadow-sm task-searchable-row">
+                                                <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 250px;">
+                                                    <span class="fw-bold text-dark mb-0 d-block searchable-title">{{ task.title }}</span>
+                                                    <small class="text-muted d-block text-truncate searchable-desc" style="max-width: 240px;">{{ task.description }}</small>
                                                 </td>
-                                                <td class="py-3">
-                                                    <span class="badge bg-white text-dark border rounded-3 px-2 py-1.5">
+                                                <td class="py-3 task-user-cell">
+                                                    <span class="badge bg-white text-dark border rounded-3 px-2 py-1.5 searchable-user">
                                                         <i class="bi bi-person m-1 text-muted"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
                                                     </span>
                                                 </td>
@@ -215,18 +225,23 @@
                                             </tr>
                                             {% endfor %}
                                         {% else %}
-                                            <tr><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
+                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No tasks have been assigned yet.</td></tr>
                                         {% endif %}
+                                        
+                                        <tr id="noResultsMatchRow" class="d-none">
+                                            <td colspan="5" class="text-center text-muted py-5 rounded-3 bg-light border">No matching task or worker details identified inside log pool.</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
 
             <div class="tab-pane fade animate-fade-in" id="usersPane" role="tabpanel" aria-labelledby="users-tab">
-                <div class="dashboard-metric-card shadow-sm p-4 border mb-5">
+                <div class="dashboard-metric-card shadow-sm p-4 border mb-5 bg-white rounded-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
                         <h5 class="fw-bold text-dark m-0"><i class="bi bi-shield-lock-fill me-2 text-danger"></i>Roster Personnel Log</h5>
                         <span class="badge bg-dark px-3 py-2 ui-pill-btn fw-semibold small">Active Roster Security Node</span>
@@ -341,6 +356,21 @@
         color: #0f172a;
     }
     .gap-2.5 { gap: 0.65rem !important; }
+    /* Beautiful sticky header handling inside layout scroll views */
+    .table-responsive::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
 </style>
 {% endblock %}
 
@@ -369,6 +399,37 @@
         const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
         toast.show();
     }
+
+    // Dynamic Live Filter for Assigned Tasks
+    document.getElementById('taskSearchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.task-searchable-row');
+        const fallbackRow = document.getElementById('noResultsMatchRow');
+        const initialFallback = document.getElementById('noTasksFallback');
+        
+        if (initialFallback && initialFallback.isConnected && !rows.length) return;
+
+        let itemsFound = false;
+
+        rows.forEach(row => {
+            const title = row.querySelector('.searchable-title').innerText.toLowerCase();
+            const desc = row.querySelector('.searchable-desc').innerText.toLowerCase();
+            const user = row.querySelector('.searchable-user').innerText.toLowerCase();
+
+            if (title.includes(query) || desc.includes(query) || user.includes(query)) {
+                row.classList.remove('d-none');
+                itemsFound = true;
+            } else {
+                row.classList.add('d-none');
+            }
+        });
+
+        if (!itemsFound) {
+            fallbackRow.classList.remove('d-none');
+        } else {
+            fallbackRow.classList.add('d-none');
+        }
+    });
 
     (function generateAdminAvatar() {
         const nameStr = "{{ request.user.username|escapejs }}";
