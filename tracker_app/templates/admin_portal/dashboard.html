@@ -394,7 +394,7 @@
             <form id="editTaskForm">
                 <input type="hidden" id="editModalTaskId">
                 <div class="modal-header border-bottom border-light">
-                    <h5 class="fw-bold text-primary m-0"><i class="bi bi-pencil-square text-primary me-2"></i>Edit Task Info</h5>
+                    <h5 class="fw-bold text-primary m-0"><i class="bi bi-pencil-square text-primary me-2"></i>Modify Task Info</h5>
                     <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body py-4">
@@ -576,19 +576,23 @@
     document.getElementById('editTaskForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const taskId = document.getElementById('editModalTaskId').value;
-        const employeeId = document.getElementById('editModalUserInput').value;
         
+        // Form Data serialization maps directly to standard Django request.POST attributes
+        const formData = new URLSearchParams();
+        formData.append('title', document.getElementById('editModalTitleInput').value.trim());
+        formData.append('description', document.getElementById('editModalDescInput').value.trim());
+        formData.append('user_id', document.getElementById('editModalUserInput').value);
+        formData.append('assigned_to', document.getElementById('editModalUserInput').value); 
+        formData.append('priority', document.getElementById('editModalPriorityInput').value);
+        formData.append('status', document.getElementById('editModalStatusInput').value);
+
         fetch(`/api/tasks/${taskId}/update/`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
-            body: JSON.stringify({
-                title: document.getElementById('editModalTitleInput').value.trim(),
-                description: document.getElementById('editModalDescInput').value.trim(),
-                user_id: employeeId,
-                assigned_to: employeeId, // Added field mapping redundancy to match standard model requirements
-                priority: document.getElementById('editModalPriorityInput').value,
-                status: document.getElementById('editModalStatusInput').value
-            })
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData.toString()
         })
         .then(res => {
             if (!res.ok) throw new Error('Network failure during updating.');

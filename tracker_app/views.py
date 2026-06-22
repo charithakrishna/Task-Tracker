@@ -332,6 +332,33 @@ def admin_assign_task(request):
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Unauthorized view constraint'}, status=403)
 
+def admin_update_task(request, task_id):
+    if request.method == 'POST' and request.user.is_staff:
+        try:
+            task = Task.objects.get(id=task_id)
+            
+            # Since the frontend sends URLSearchParams, fields are inside request.POST
+            task.title = request.POST.get('title')
+            task.description = request.POST.get('description')
+            task.priority = request.POST.get('priority')
+            task.status = request.POST.get('status')
+            
+            # Update the worker assignment profile links
+            assigned_user_id = request.POST.get('assigned_to') or request.POST.get('user_id')
+            if assigned_user_id:
+                task.assigned_to = User.objects.get(id=assigned_user_id)
+                
+            task.save()
+            return JsonResponse({'status': 'success'})
+            
+        except Task.DoesNotExist:
+            return JsonResponse({'error': 'Task not found'}, status=404)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'Assigned employee profile not found'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+            
+    return JsonResponse({'error': 'Unauthorized view constraint'}, status=403)
 
 # --- API ENDPOINTS FOR FETCH REQUESTS ---
 
