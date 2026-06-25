@@ -134,7 +134,7 @@
                     <tbody id="activeTaskTableBody" class="bg-white">
                         {% if tasks %}
                             {% for task in tasks %}
-                            <tr class="id-task-wrapper-node transition-table-row border-bottom" id="task-card-{{ task.id }}" data-priority-weight="{{ task.priority }}" style="border-color: #f1f5f9 !important;">
+                            <tr class="id-task-wrapper-node transition-table-row border-bottom" id="task-card-{{ task.id }}" style="border-color: #f1f5f9 !important;">
                                 <td class="ps-4 py-3.5">
                                     <div class="d-flex flex-column text-wrap">
                                         <span class="fw-bold text-dark mb-1 fs-6 tracking-tight">{{ task.title }}</span>
@@ -374,7 +374,6 @@
 
 {% block scripts %}
 <script>
-    // Memory Cache Structure for Live Chart Engine 
     let statsCache = {
         pending: parseInt('{{ stats.pending }}') || 0,
         progressing: parseInt('{{ stats.progressing }}') || 0,
@@ -383,7 +382,6 @@
 
     let chartPriority, chartStatusRatio;
 
-    // Read initial template variables dynamically from full history to fix layout misalignment across pages
     let priorityHighCount = 0, priorityMedCount = 0, priorityLowCount = 0;
     {% for task in absolute_history %}
         {% if task.priority == '1_HIGH' %} priorityHighCount++; {% elif task.priority == '2_MEDIUM' %} priorityMedCount++; {% else %} priorityLowCount++; {% endif %}
@@ -404,7 +402,6 @@
         if(avatarNode) { avatarNode.innerText = initials || "U"; avatarNode.style.backgroundColor = randomColor; }
     })();
 
-    // Init Chart 1: Bar Chart for Priority Counts
     const ctxBar = document.getElementById('taskPriorityBarChart').getContext('2d');
     chartPriority = new Chart(ctxBar, {
         type: 'bar',
@@ -428,7 +425,6 @@
         }
     });
 
-    // Init Chart 2: Pie Chart for Workflow Status Distribution
     const ctxPie = document.getElementById('taskStatusPieChart').getContext('2d');
     chartStatusRatio = new Chart(ctxPie, {
         type: 'pie',
@@ -453,29 +449,7 @@
         }
     });
 
-    // Function to dynamically sort the table rows based on priority weight attribute
-    function sortTableByPriority() {
-        const tableBody = document.getElementById('activeTaskTableBody');
-        if (!tableBody) return;
-
-        const rows = Array.from(tableBody.querySelectorAll('tr.id-task-wrapper-node'));
-        if (rows.length === 0) return;
-
-        // Sorting rule: '1_HIGH' < '2_MEDIUM' < '3_LOW' sorting string evaluation alphabetically
-        rows.sort((rowA, rowB) => {
-            const weightA = rowA.getAttribute('data-priority-weight') || '3_LOW';
-            const weightB = rowB.getAttribute('data-priority-weight') || '3_LOW';
-            return weightA.localeCompare(weightB);
-        });
-
-        // Re-append sorted elements back into the DOM structure
-        rows.forEach(row => tableBody.appendChild(row));
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
-        // Run frontend table sorter immediately on ready state
-        sortTableByPriority();
-
         const viewModalElement = document.getElementById('viewTaskDetailsModal');
         if (viewModalElement) {
             viewModalElement.addEventListener('show.bs.modal', function (event) {
@@ -524,16 +498,13 @@
                 statsCache[oldStatus.toLowerCase()]--;
                 statsCache[newStatus.toLowerCase()]++;
                 
-                // Repaint Chart Data Visualizations
                 chartStatusRatio.data.datasets[0].data = [statsCache.pending, statsCache.progressing, statsCache.completed];
                 chartStatusRatio.update();
 
-                // Live Numeric Counter Updates
                 document.getElementById('metric-completed').innerText = statsCache.completed;
                 document.getElementById('metric-pending').innerText = statsCache.pending;
                 document.getElementById('metric-progressing').innerText = statsCache.progressing;
 
-                // Adjust progress bar card fills
                 const totalCount = parseInt(document.getElementById('metric-total').innerText) || 1;
                 document.querySelector('#metric-completed + .progress .progress-bar').style.width = ((statsCache.completed / totalCount) * 100) + '%';
                 document.querySelector('#metric-pending + .progress .progress-bar').style.width = ((statsCache.pending / totalCount) * 100) + '%';
