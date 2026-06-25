@@ -88,7 +88,7 @@
                 <h5 class="fw-bold text-dark mb-0 tracking-tight">
                     <i class="bi bi-pie-chart-fill me-2" style="color: #1d4ed8;"></i>Visual Analysis Breakdown
                 </h5>
-                <span class="badge bg-light text-muted border border-secondary border-opacity-10 px-3 py-1.5 rounded-3 fw-medium" style="font-size: 11px;">Live Performance Analytics</span>
+                <span class="badge bg-success rounded-pill px-2.5 py-1 me-2 small fw-bold" style="font-size: 11px;"><span class="spinner-grow spinner-grow-sm me-1" style="width: 7px; height: 7px;"></span>Live Stats</span>
             </div>
 
             <div class="row g-4 justify-content-center">
@@ -117,7 +117,7 @@
                 <h5 class="fw-bold text-dark mb-0 tracking-tight">
                     <i class="bi bi-list-columns-reverse me-2" style="color: #1d4ed8 !important;"></i>Current Task Queue
                 </h5>
-                <span class="badge bg-white text-secondary border border-secondary border-opacity-20 px-3 py-2 rounded-3 fw-semibold small">Active Assignment Panel</span>
+                <span class="badge bg-success rounded-pill px-2.5 py-1 me-2 small fw-bold" style="font-size: 11px;"><span class="spinner-grow spinner-grow-sm me-1" style="width: 7px; height: 7px;"></span>Active Tasks</span>
             </div>
 
             <div class="table-responsive">
@@ -176,7 +176,7 @@
                                             <option value="COMPLETED">Complete ✓</option>
                                         </select>
                                     </div>
-                                end</td>
+                                </td>
                             </tr>
                             {% endfor %}
                         {% else %}
@@ -224,17 +224,6 @@
                             <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == tasks.paginator.num_pages %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page={{ tasks.paginator.num_pages }}">{{ tasks.paginator.num_pages }}</a>
                         </li>
                         {% endif %}
-
-                        {% if tasks.has_next %}
-                        <li class="page-item ms-1">
-                            <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-primary transition-all border-secondary border-opacity-20 hover-bg-dark shadow-sm" href="?page={{ tasks.next_page_number }}" aria-label="Next Page Matrix Link">End &raquo;</a>
-                        </li>
-                        {% else %}
-                        <li class="page-item ms-1 disabled">
-                            <span class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-muted opacity-50 border-secondary border-opacity-10" aria-disabled="true">End &raquo;</span>
-                        </li>
-                        {% endif %}
-
                     </ul>
                 </nav>
             </div>
