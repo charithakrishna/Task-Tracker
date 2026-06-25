@@ -134,7 +134,7 @@
                     <tbody id="activeTaskTableBody" class="bg-white">
                         {% if tasks %}
                             {% for task in tasks %}
-                            <tr class="id-task-wrapper-node transition-table-row border-bottom" id="task-card-{{ task.id }}" style="border-color: #f1f5f9 !important;">
+                            <tr class="id-task-wrapper-node transition-table-row border-bottom" id="task-card-{{ task.id }}" data-priority-weight="{{ task.priority }}" style="border-color: #f1f5f9 !important;">
                                 <td class="ps-4 py-3.5">
                                     <div class="d-flex flex-column text-wrap">
                                         <span class="fw-bold text-dark mb-1 fs-6 tracking-tight">{{ task.title }}</span>
@@ -453,7 +453,29 @@
         }
     });
 
+    // Function to dynamically sort the table rows based on priority weight attribute
+    function sortTableByPriority() {
+        const tableBody = document.getElementById('activeTaskTableBody');
+        if (!tableBody) return;
+
+        const rows = Array.from(tableBody.querySelectorAll('tr.id-task-wrapper-node'));
+        if (rows.length === 0) return;
+
+        // Sorting rule: '1_HIGH' < '2_MEDIUM' < '3_LOW' sorting string evaluation alphabetically
+        rows.sort((rowA, rowB) => {
+            const weightA = rowA.getAttribute('data-priority-weight') || '3_LOW';
+            const weightB = rowB.getAttribute('data-priority-weight') || '3_LOW';
+            return weightA.localeCompare(weightB);
+        });
+
+        // Re-append sorted elements back into the DOM structure
+        rows.forEach(row => tableBody.appendChild(row));
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
+        // Run frontend table sorter immediately on ready state
+        sortTableByPriority();
+
         const viewModalElement = document.getElementById('viewTaskDetailsModal');
         if (viewModalElement) {
             viewModalElement.addEventListener('show.bs.modal', function (event) {
