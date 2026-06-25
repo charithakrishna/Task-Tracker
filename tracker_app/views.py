@@ -135,8 +135,8 @@ def employee_dashboard(request):
     if not request.user.is_authenticated or request.user.is_staff:
         return redirect('employee_login')
     
-    # FIX: Added .order_by('priority') to sort globally across all paginated pages
-    active_tasks = Task.objects.filter(assigned_to=request.user).exclude(status='COMPLETED').order_by('priority')
+    # Active workspace task items (Excludes Completed) - ordered strictly to prevent pagination shifting
+    active_tasks_all = Task.objects.filter(assigned_to=request.user).exclude(status='COMPLETED').order_by('priority')
     
     # Complete history array trace
     absolute_history = Task.objects.filter(assigned_to=request.user)
@@ -145,8 +145,13 @@ def employee_dashboard(request):
     progress_count = absolute_history.filter(status='PROGRESSING').count()
     completed_count = absolute_history.filter(status='COMPLETED').count()
     
+    # Instantiate pagination mapping bounds (5 tasks per dashboard queue block)
+    paginator = Paginator(active_tasks_all, 5)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
     context = {
-        'tasks': active_tasks,
+        'tasks': page_obj,  # Injected paginated slice directly into loop handler safely
         'absolute_history': absolute_history,
         'stats': {
             'pending': pending_count,
