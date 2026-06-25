@@ -176,7 +176,7 @@
                                             <option value="COMPLETED">Complete ✓</option>
                                         </select>
                                     </div>
-                                </td>
+                                end</td>
                             </tr>
                             {% endfor %}
                         {% else %}
@@ -187,6 +187,58 @@
                     </tbody>
                 </table>
             </div>
+
+            {% if tasks.has_other_pages %}
+            <div class="d-flex justify-content-center align-items-center bg-light border-top border-light p-4">
+                <nav aria-label="Task queue modern pagination">
+                    <ul class="pagination pagination-sm m-0 gap-1 border-0">
+                        
+                        <li class="page-item {% if tasks.number == 1 %}active{% endif %}">
+                            <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == 1 %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page=1">1</a>
+                        </li>
+
+                        {% if tasks.number > 3 %}
+                        <li class="page-item disabled">
+                            <span class="page-link bg-transparent border-0 text-muted px-2 py-2 fw-semibold">..</span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in tasks.paginator.page_range %}
+                            {% if num > 1 and num < tasks.paginator.num_pages %}
+                                {% if num >= tasks.number|add:-1 and num <= tasks.number|add:1 %}
+                                <li class="page-item {% if tasks.number == num %}active{% endif %}">
+                                    <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == num %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if tasks.number|add:2 < tasks.paginator.num_pages %}
+                        <li class="page-item disabled">
+                            <span class="page-link bg-transparent border-0 text-muted px-2 py-2 fw-semibold">...</span>
+                        </li>
+                        {% endif %}
+
+                        {% if tasks.paginator.num_pages > 1 %}
+                        <li class="page-item {% if tasks.number == tasks.paginator.num_pages %}active{% endif %}">
+                            <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == tasks.paginator.num_pages %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page={{ tasks.paginator.num_pages }}">{{ tasks.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+
+                        {% if tasks.has_next %}
+                        <li class="page-item ms-1">
+                            <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-primary transition-all border-secondary border-opacity-20 hover-bg-dark shadow-sm" href="?page={{ tasks.next_page_number }}" aria-label="Next Page Matrix Link">End &raquo;</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item ms-1 disabled">
+                            <span class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-muted opacity-50 border-secondary border-opacity-10" aria-disabled="true">End &raquo;</span>
+                        </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -303,6 +355,17 @@
         color: #ffffff !important;
     }
     
+    .pagination .page-link:hover {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .pagination .active .page-link:hover {
+        background-color: #1d4ed8 !important;
+        color: #ffffff !important;
+    }
+    
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(6px); }
         to { opacity: 1; transform: translateY(0); }
@@ -331,7 +394,7 @@
 
     let chartPriority, chartStatusRatio;
 
-    // Read initial template variables dynamically
+    // Read initial template variables dynamically from paginated collection slice mapping
     let priorityHighCount = 0, priorityMedCount = 0, priorityLowCount = 0;
     {% for task in tasks %}
         {% if task.priority == '1_HIGH' %} priorityHighCount++; {% elif task.priority == '2_MEDIUM' %} priorityMedCount++; {% else %} priorityLowCount++; {% endif %}
