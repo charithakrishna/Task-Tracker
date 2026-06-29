@@ -1,0 +1,249 @@
+<div id="taskQueueContainer">
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0" id="activeTasksTable" style="border-collapse: separate; border-spacing: 0 8px;">
+            <thead>
+                <tr class="text-secondary small text-uppercase fw-bold tracking-wider" style="font-size:11px;background-color:#f8fafc;">
+                    <th class="ps-4 py-3" style="width:40%;">Task Details</th>
+                    <th style="width:15%;">Priority</th>
+                    <th style="width:15%;">Status</th>
+                    <th style="width:12%;">Progress</th>
+                    <th class="text-end pe-4" style="width:18%;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="activeTaskTableBody">
+
+            {% if tasks %}
+
+                {% for task in tasks %}
+
+                <tr class="id-task-wrapper-node transition-table-row border-bottom"
+                    id="task-card-{{ task.id }}"
+                    data-priority-weight="{{ task.priority }}">
+
+                    <td class="ps-4 py-3">
+
+                        <div class="d-flex flex-column">
+
+                            <span class="fw-bold text-dark">
+                                {{ task.title }}
+                            </span>
+
+                            <small
+                                class="text-muted"
+                                style="white-space:normal;
+                                       word-break:break-word;
+                                       line-height:1.4;">
+
+                                {{ task.description }}
+
+                            </small>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge
+                        {% if task.priority == '1_HIGH' %}
+                            bg-danger bg-opacity-10 text-danger
+                        {% elif task.priority == '2_MEDIUM' %}
+                            bg-warning bg-opacity-10 text-warning-emphasis
+                        {% else %}
+                            bg-info bg-opacity-10 text-info-emphasis
+                        {% endif %}
+                        ">
+
+                            {{ task.get_priority_display }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <span
+                            id="status-badge-{{ task.id }}"
+                            class="badge
+                            {% if task.status == 'PROGRESSING' %}
+                                bg-primary bg-opacity-10 text-primary
+                            {% else %}
+                                bg-warning bg-opacity-10 text-warning-emphasis
+                            {% endif %}
+                            ">
+
+                            {{ task.get_status_display }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <div class="progress rounded-pill">
+
+                            <div
+                                id="status-bar-{{ task.id }}"
+                                class="progress-bar w-100
+                                {% if task.status == 'PROGRESSING' %}
+                                    bg-primary
+                                {% else %}
+                                    bg-warning
+                                {% endif %}
+                                ">
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <td class="text-end pe-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <button
+                                class="btn btn-light btn-sm"
+
+                                data-bs-toggle="modal"
+                                data-bs-target="#viewTaskDetailsModal"
+
+                                data-bs-title="{{ task.title }}"
+                                data-bs-desc="{{ task.description }}"
+                                data-bs-priority="{{ task.get_priority_display }}"
+                                data-bs-status="{{ task.get_status_display }}">
+
+                                <i class="bi bi-eye-fill"></i>
+
+                            </button>
+
+                            <select
+                                class="form-select form-select-sm"
+
+                                onchange="updateTaskStatus('{{ task.id }}',this.value)">
+
+                                <option value="PENDING"
+                                {% if task.status == 'PENDING' %}
+                                selected
+                                {% endif %}
+                                >
+                                    Pending
+                                </option>
+
+                                <option value="PROGRESSING"
+                                {% if task.status == 'PROGRESSING' %}
+                                selected
+                                {% endif %}
+                                >
+                                    In Progress
+                                </option>
+
+                                <option value="COMPLETED">
+
+                                    Completed
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="5"
+                        class="text-center py-5">
+
+                        🎉 No active tasks assigned.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+{% if tasks.has_other_pages %}
+
+<div class="d-flex justify-content-center bg-light border-top p-4">
+
+<nav>
+
+<ul class="pagination pagination-sm">
+
+{% if tasks.has_previous %}
+
+<li class="page-item">
+
+<a
+class="page-link ajax-page"
+href="?page={{ tasks.previous_page_number }}">
+
+Previous
+
+</a>
+
+</li>
+
+{% endif %}
+
+{% for num in tasks.paginator.page_range %}
+
+<li class="page-item
+{% if tasks.number == num %}
+active
+{% endif %}
+">
+
+<a
+class="page-link ajax-page"
+href="?page={{ num }}">
+
+{{ num }}
+
+</a>
+
+</li>
+
+{% endfor %}
+
+{% if tasks.has_next %}
+
+<li class="page-item">
+
+<a
+class="page-link ajax-page"
+href="?page={{ tasks.next_page_number }}">
+
+Next
+
+</a>
+
+</li>
+
+{% endif %}
+
+</ul>
+
+</nav>
+
+</div>
+
+{% endif %}
+
+</div>

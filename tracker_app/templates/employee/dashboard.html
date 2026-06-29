@@ -120,115 +120,11 @@
                 <span class="badge bg-success rounded-pill px-2.5 py-1 me-2 small fw-bold" style="font-size: 11px;"><span class="spinner-grow spinner-grow-sm me-1" style="width: 7px; height: 7px;"></span>Active Tasks</span>
             </div>
 
-            <div class="table-responsive">
-                <table class="table align-middle mb-0" id="activeTasksTable" style="border-collapse: separate; border-spacing: 0 8px;">
-                    <thead>
-                        <tr class="text-secondary small text-uppercase fw-bold tracking-wider" style="font-size: 11px; background-color: #f8fafc;">
-                            <th class="ps-4 py-3.5" style="width: 40%;">Task Details</th>
-                            <th class="py-3.5" style="width: 15%;">Priority</th>
-                            <th class="py-3.5" style="width: 15%;">Status Label</th>
-                            <th class="py-3.5" style="width: 12%;">Progress</th>
-                            <th class="text-end pe-4 py-3.5" style="width: 18%;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activeTaskTableBody" class="bg-white">
-                        {% if tasks %}
-                            {% for task in tasks %}
-                            <tr class="id-task-wrapper-node transition-table-row border-bottom" id="task-card-{{ task.id }}" data-priority-weight="{{ task.priority }}" style="border-color: #f1f5f9 !important;">
-                                <td class="ps-4 py-3.5">
-                                    <div class="d-flex flex-column text-wrap">
-                                        <span class="fw-bold text-dark mb-1 fs-6 tracking-tight">{{ task.title }}</span>
-                                        <small class="text-muted text-wrap description-box-style" style="font-size: 13px; line-height: 1.4; white-space: normal; word-break: break-word;">{{ task.description }}</small>
-                                </td>
-                                <td class="py-3.5">
-                                    <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-info bg-opacity-10 text-info-emphasis{% endif %} px-2.5 py-1.5 fw-bold rounded-3" style="font-size: 11px;">
-                                        <i class="bi bi-circle-fill me-1" style="font-size: 6px; vertical-align: middle;"></i> {{ task.get_priority_display }}
-                                    </span>
-                                </td>
-                                <td class="py-3.5">
-                                    <span class="badge {% if task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary animate-pulse{% else %}bg-warning bg-opacity-10 text-warning-emphasis{% endif %} px-2.5 py-1.5 fw-bold rounded-3 transition-status-badge" id="status-badge-{{ task.id }}" style="font-size: 11px;">
-                                        {{ task.get_status_display }}
-                                    </span>
-                                </td>
-                                <td class="py-3.5">
-                                    <div style="max-width: 100px;">
-                                        <div class="progress rounded-pill animate-fade-in" style="height: 7px; background-color: #e2e8f0;">
-                                            <div id="status-bar-{{ task.id }}" class="progress-bar rounded-pill transition-bar-color w-100 {% if task.status == 'PROGRESSING' %}bg-primary{% else %}bg-warning{% endif %}" style="transition: background-color 0.4s ease;"></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="text-end pe-4 py-3.5">
-                                    <div class="d-flex gap-2 justify-content-end align-items-center">
-                                        <button type="button" class="btn btn-light btn-sm border bg-white text-secondary rounded-3 px-2.5 py-1.5 fw-semibold shadow-sm action-btn-hover" style="border-color: #cbd5e1 !important; font-size: 12px;"
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#viewTaskDetailsModal"
-                                                data-bs-title="{{ task.title }}"
-                                                data-bs-desc="{{ task.description }}"
-                                                data-bs-priority="{{ task.get_priority_display }}"
-                                                data-bs-status="{{ task.get_status_display }}">
-                                            <i class="bi bi-eye-fill"></i>
-                                        </button>
-                                        
-                                        <select class="form-select form-select-sm border bg-white rounded-3 shadow-sm py-1.5 ps-2 pe-4 text-dark fw-bold" style="border-color: #cbd5e1 !important; font-size: 12px; max-width: 130px;" onchange="updateTaskStatus('{{ task.id }}', this.value)">
-                                            <option value="PENDING" {% if task.status == 'PENDING' %}selected{% endif %}>Pending</option>
-                                            <option value="PROGRESSING" {% if task.status == 'PROGRESSING' %}selected{% endif %}>In Progress</option>
-                                            <option value="COMPLETED">Complete ✓</option>
-                                        </select>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr id="emptyActiveTaskFallbackRow">
-                                <td colspan="5" class="text-center text-muted py-5 rounded-4 bg-light">🎉 No active tasks assigned right now. Great job!</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+            <div id="taskQueueContainer">
+                {% include 'employee/task_queue.html' %}
             </div>
 
-            {% if tasks.has_other_pages %}
-            <div class="d-flex justify-content-center align-items-center bg-light border-top border-light p-4">
-                <nav aria-label="Task queue modern pagination">
-                    <ul class="pagination pagination-sm m-0 gap-1 border-0">
-                        
-                        <li class="page-item {% if tasks.number == 1 %}active{% endif %}">
-                            <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == 1 %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page=1">1</a>
-                        </li>
-
-                        {% if tasks.number > 3 %}
-                        <li class="page-item disabled">
-                            <span class="page-link bg-transparent border-0 text-muted px-2 py-2 fw-semibold">..</span>
-                        </li>
-                        {% endif %}
-
-                        {% for num in tasks.paginator.page_range %}
-                            {% if num > 1 and num < tasks.paginator.num_pages %}
-                                {% if num >= tasks.number|add:-1 and num <= tasks.number|add:1 %}
-                                <li class="page-item {% if tasks.number == num %}active{% endif %}">
-                                    <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == num %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page={{ num }}">{{ num }}</a>
-                                </li>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if tasks.number|add:2 < tasks.paginator.num_pages %}
-                        <li class="page-item disabled">
-                            <span class="page-link bg-transparent border-0 text-muted px-2 py-2 fw-semibold">...</span>
-                        </li>
-                        {% endif %}
-
-                        {% if tasks.paginator.num_pages > 1 %}
-                        <li class="page-item {% if tasks.number == tasks.paginator.num_pages %}active{% endif %}">
-                            <a class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center transition-all {% if tasks.number == tasks.paginator.num_pages %}bg-primary text-white shadow-sm{% else %}bg-white text-dark border{% endif %}" href="?page={{ tasks.paginator.num_pages }}">{{ tasks.paginator.num_pages }}</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-            {% endif %}
-        </div>
-    </div>
+            
 </div>
 
 <div class="modal fade" id="viewTaskDetailsModal" tabindex="-1" aria-labelledby="viewTaskDetailsModalLabel" aria-hidden="true">
@@ -566,5 +462,28 @@
             }
         });
     }
+
+    // ======================
+// AJAX Pagination
+// ======================
+document.addEventListener("click", function (e) {
+
+    const link = e.target.closest(".pagination a");
+
+    if (!link) return;
+
+    e.preventDefault();
+
+    fetch(link.href, {
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById("taskQueueContainer").innerHTML = html;
+    });
+
+});
 </script>
 {% endblock %}

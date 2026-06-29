@@ -134,24 +134,27 @@ def employee_login(request):
 def employee_dashboard(request):
     if not request.user.is_authenticated or request.user.is_staff:
         return redirect('employee_login')
-    
-    # Active workspace task items (Excludes Completed) - ordered strictly to prevent pagination shifting
-    active_tasks_all = Task.objects.filter(assigned_to=request.user).exclude(status='COMPLETED').order_by('priority')
-    
-    # Complete history array trace
-    absolute_history = Task.objects.filter(assigned_to=request.user)
-    
+
+    active_tasks_all = Task.objects.filter(
+        assigned_to=request.user
+    ).exclude(
+        status='COMPLETED'
+    ).order_by('priority')
+
+    absolute_history = Task.objects.filter(
+        assigned_to=request.user
+    )
+
     pending_count = absolute_history.filter(status='PENDING').count()
     progress_count = absolute_history.filter(status='PROGRESSING').count()
     completed_count = absolute_history.filter(status='COMPLETED').count()
-    
-    # Instantiate pagination mapping bounds (5 tasks per dashboard queue block)
+
     paginator = Paginator(active_tasks_all, 5)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
-        'tasks': page_obj,  # Injected paginated slice directly into loop handler safely
+        'tasks': page_obj,
         'absolute_history': absolute_history,
         'stats': {
             'pending': pending_count,
@@ -159,7 +162,11 @@ def employee_dashboard(request):
             'completed': completed_count,
         }
     }
-    return render(request, 'employee/dashboard.html', context)
+
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render(request, "employee/task_queue.html", context)
+
+    return render(request, "employee/dashboard.html", context)
 
 
 def reset_password(request):
