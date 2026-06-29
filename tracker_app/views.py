@@ -257,18 +257,32 @@ def admin_login(request):
 
 
 def admin_dashboard(request):
+    # Ensure authorization (adjust checks to match your design constraints)
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+        return redirect('employee_login')
         
-    # Modified to include all workers. Since the create form marks created accounts as staff/managers, 
-    # we filter out superusers only so that employee lists render correctly.
-    employees = User.objects.filter(is_superuser=False)
-    all_tasks = Task.objects.all()
+    # 1. Fetch the overall base task queryset
+    all_tasks = Task.objects.all().order_by('-id') 
     
-    return render(request, 'admin_portal/dashboard.html', {
-        'employees': employees,
-        'all_tasks': all_tasks
-    })
+    # 2. Apply pagination (matching the 5 items per page design from employee_dashboard)
+    paginator = Paginator(all_tasks, 5)
+    page_number = request.GET.get('page', 1)
+    tasks_page = paginator.get_page(page_number)
+    
+    # Base configuration / context elements (e.g., users for assignment dropdowns, metrics, etc.)
+    all_users = User.objects.filter(is_staff=False)
+    
+    context = {
+        'tasks': tasks_page,  # Passed to the loop block
+        'users': all_users,
+    }
+    
+    # 3. Handle asynchronous AJAX page shifts
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Re-use your task queue or dashboard sub-container partial block
+        return render(request, 'task_queue.html', context)
+        
+    return render(request, 'dashboard.html', context)
 
 
 # --- NEW ADMIN API ENDPOINTS FOR CREATION / ASSIGNMENTS ---
