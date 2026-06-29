@@ -47,13 +47,13 @@
 
         <ul class="nav nav-pills gap-2 border-bottom border-secondary border-opacity-10 pb-3 mb-5" id="dashboardTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link {% if not request.GET.emp_page %}active{% endif %} fw-semibold small ui-pill-btn px-4 py-2 text-primary border border-primary border-opacity-20" id="operations-tab" data-bs-toggle="pill" data-bs-target="#operationsPane" type="button" role="tab" aria-controls="operationsPane" aria-selected="{% if not request.GET.emp_page %}true{% else %}false{% endif %}">
+                <button class="nav-link active fw-semibold small ui-pill-btn px-4 py-2 text-primary border border-primary border-opacity-20" id="operations-tab" data-bs-toggle="pill" data-bs-target="#operationsPane" type="button" role="tab" aria-controls="operationsPane" aria-selected="true">
                     <i class="bi bi-list-task me-2"></i>Tasks & Assignments
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link {% if request.GET.emp_page %}active{% endif %} fw-semibold small ui-pill-btn px-4 py-2 text-secondary border border-transparent" id="users-tab" data-bs-toggle="pill" data-bs-target="#usersPane" type="button" role="tab" aria-controls="usersPane" aria-selected="{% if request.GET.emp_page %}true{% else %}false{% endif %}">
-                    <i class="bi bi-people-fill me-2"></i>Employee List ({{ raw_employees_count }})
+                <button class="nav-link fw-semibold small ui-pill-btn px-4 py-2 text-secondary border border-transparent" id="users-tab" data-bs-toggle="pill" data-bs-target="#usersPane" type="button" role="tab" aria-controls="usersPane" aria-selected="false">
+                    <i class="bi bi-people-fill me-2"></i>Employee List ({{ employees|length }})
                 </button>
             </li>
         </ul>
@@ -119,7 +119,7 @@
         </div>
 
         <div class="tab-content" id="dashboardTabsContent">
-            <div class="tab-pane fade {% if not request.GET.emp_page %}show active{% endif %} animate-fade-in" id="operationsPane" role="tabpanel" aria-labelledby="operations-tab">
+            <div class="tab-pane fade show active animate-fade-in" id="operationsPane" role="tabpanel" aria-labelledby="operations-tab">
                 <div class="row g-4">
                     
                     <div class="col-12">
@@ -205,11 +205,16 @@
                                     <tbody>
                                         {% if all_tasks %}
                                             {% for task in all_tasks %}
-                                            <tr id="admin-task-row-{{ task.id }}" class="custom-table-row rounded-3 shadow-sm task-searchable-row border border-secondary border-opacity-10">
-                                                <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 250px;">
-                                                    <span class="fw-bold text-dark mb-0 d-block searchable-title">{{ task.title }}</span>
-                                                    <small class="text-secondary d-block text-truncate searchable-desc opacity-75" style="max-width: 240px;">{{ task.description }}</small>
-                                                </td>
+                                            <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 420px;">
+                                                <span class="fw-bold text-dark mb-0 d-block searchable-title">
+                                                   {{ task.title }}
+                                                    </span>
+
+                                                <small class="text-secondary d-block searchable-desc opacity-75"
+                                                       style="white-space: normal; word-break: break-word;">
+                                                    {{ task.description }}
+                                                </small>                                          
+                                            </td>
                                                 <td class="py-3 task-user-cell">
                                                     <span class="badge bg-white text-secondary border border-secondary border-opacity-20 rounded-3 px-2 py-1.5 searchable-user">
                                                         <i class="bi bi-person-fill m-1 text-primary"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
@@ -225,166 +230,130 @@
                                                         {{ task.get_status_display }}
                                                     </span>
                                                 </td>
-                                                <td class="text-center py-3 rounded-end-3">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-3 px-2.5 py-1.5" onclick="deleteTaskByAdmin('{{ task.id }}')">
-                                                        <i class="bi bi-trash3-fill me-1"></i> Delete
-                                                    </button>
+                                                <td class="text-center py-3 pe-3 rounded-end-3">
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <button class="btn btn-link link-secondary p-0 border-0 shadow-none" title="View details"
+                                                                data-bs-toggle="modal" data-bs-target="#viewTaskModal"
+                                                                data-title="{{ task.title }}"
+                                                                data-desc="{{ task.description }}"
+                                                                data-user="{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})"
+                                                                data-priority="{{ task.get_priority_display }}"
+                                                                data-status="{{ task.get_status_display }}">
+                                                            <i class="bi bi-eye-fill fs-5 opacity-75"></i>
+                                                        </button>
+                                                        <!-- <button class="btn btn-link link-primary p-0 border-0 shadow-none" title="Edit task"
+                                                                data-bs-toggle="modal" data-bs-target="#editTaskModal"
+                                                                data-id="{{ task.id }}"
+                                                                data-title="{{ task.title }}"
+                                                                data-desc="{{ task.description }}"
+                                                                data-user-id="{{ task.assigned_to.id }}"
+                                                                data-priority="{{ task.priority }}"
+                                                                data-status="{{ task.status }}">
+                                                            <i class="bi bi-pencil-square fs-5"></i>
+                                                        </button> -->
+                                                        <button class="btn btn-link link-danger p-0 border-0 shadow-none text-danger" title="Delete task"
+                                                                data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                                                data-id="{{ task.id }}">
+                                                            <i class="bi bi-trash-fill fs-5 opacity-75"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                             {% endfor %}
                                         {% else %}
-                                            <tr id="emptyTaskFallbackRow"><td colspan="5" class="text-center text-muted py-5 bg-light">No tasks found. Try assigning one above!</td></tr>
+                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-secondary py-5 rounded-3 bg-light border border-secondary border-opacity-10">No tasks found.</td></tr>
                                         {% endif %}
+                                        
+                                        <tr id="noResultsMatchRow" class="d-none">
+                                            <td colspan="5" class="text-center text-secondary py-5 rounded-3 bg-light border border-secondary border-opacity-10">No tasks or employee data found matching your search.</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
-
-                            {% if all_tasks.has_other_pages %}
-                            <div class="d-flex justify-content-between align-items-center mt-4 px-2 pt-3 border-top border-light border-opacity-50">
-                                <div class="text-secondary small fw-semibold">
-                                    Showing tasks {{ all_tasks.start_index }} to {{ all_tasks.end_index }} of {{ all_tasks.paginator.count }}
-                                </div>
-                                <nav aria-label="Task queue navigation pagination layout">
-                                    <ul class="pagination pagination-sm m-0 gap-1 border-0">
-                                        {% if all_tasks.has_previous %}
-                                            <li class="page-item">
-                                                <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-dark shadow-sm" href="?task_page={{ all_tasks.previous_page_number }}{% if request.GET.emp_page %}&emp_page={{ request.GET.emp_page }}{% endif %}">
-                                                    <i class="bi bi-chevron-left" style="font-size: 10px;"></i>
-                                                </a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link rounded-3 border bg-light px-3 py-2 text-muted"><i class="bi bi-chevron-left" style="font-size: 10px;"></i></span>
-                                            </li>
-                                        {% endif %}
-
-                                        {% for num in all_tasks.paginator.page_range %}
-                                            {% if all_tasks.number == num %}
-                                                <li class="page-item active" aria-current="page">
-                                                    <span class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center bg-primary text-white shadow-sm">{{ num }}</span>
-                                                </li>
-                                            {% elif num > all_tasks.number|add:'-3' and num < all_tasks.number|add:'3' %}
-                                                <li class="page-item">
-                                                    <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-dark shadow-sm" href="?task_page={{ num }}{% if request.GET.emp_page %}&emp_page={{ request.GET.emp_page }}{% endif %}">{{ num }}</a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-
-                                        {% if all_tasks.has_next %}
-                                            <li class="page-item">
-                                                <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-dark shadow-sm" href="?task_page={{ all_tasks.next_page_number }}{% if request.GET.emp_page %}&emp_page={{ request.GET.emp_page }}{% endif %}">
-                                                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
-                                                </a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link rounded-3 border bg-light px-3 py-2 text-muted"><i class="bi bi-chevron-right" style="font-size: 10px;"></i></span>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </nav>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
-
                 </div>
             </div>
 
-            <div class="tab-pane fade {% if request.GET.emp_page %}show active{% endif %} animate-fade-in" id="usersPane" role="tabpanel" aria-labelledby="users-tab">
-                <div class="row g-4 mb-5">
-                    <div class="col-12">
-                        <div class="dashboard-metric-card border border-secondary border-opacity-15 shadow-sm p-4 bg-white rounded-4">
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0" id="employeesTable" style="border-collapse: separate; border-spacing: 0 10px;">
-                                    <thead>
-                                        <tr class="small text-uppercase fw-bold text-secondary" style="background-color: #f1f5f9; color: #475569;">
-                                            <th class="border-0 py-3 ps-3 rounded-start-3">Employee Details</th>
-                                            <th class="border-0 py-3">Role / Track</th>
-                                            <th class="border-0 py-3">Email</th>
-                                            <th class="border-0 py-3 pe-3 rounded-end-3">Phone</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% if employees %}
-                                            {% for employee in employees %}
-                                            <tr class="custom-table-row rounded-3 shadow-sm user-card-node border border-secondary border-opacity-10" data-search-string="{{ employee.first_name|lower }} {{ employee.last_name|lower }} {{ employee.username|lower }}">
-                                                <td class="ps-3 py-3 rounded-start-3">
-                                                    <div class="d-flex align-items-center gap-3">
-                                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 40px; height: 40px; font-size: 14px;">
-                                                            {{ employee.first_name|slice:":1" }}{{ employee.last_name|slice:":1" }}
-                                                        </div>
-                                                        <div>
-                                                            <span class="fw-bold text-dark d-block mb-0">{{ employee.first_name }} {{ employee.last_name }}</span>
-                                                            <small class="text-secondary opacity-75">@{{ employee.username }}</small>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="py-3">
-                                                    <span class="badge bg-light text-primary border border-primary border-opacity-10 px-2.5 py-1.5 rounded-3 small fw-semibold">
-                                                        <i class="bi bi-briefcase-fill me-1"></i>{{ employee.profile.role|default:"Software Engineer Track" }}
-                                                    </span>
-                                                </td>
-                                                <td class="py-3 text-secondary">{{ employee.email }}</td>
-                                                <td class="py-3 pe-3 rounded-end-3 text-secondary">{{ employee.profile.phone_number }}</td>
-                                            </tr>
-                                            {% endfor %}
-                                        {% else %}
-                                            <tr id="emptyEmployeesFallbackCard">
-                                                <td colspan="4" class="text-center text-muted py-5 bg-light">No registered employee identity accounts found.</td>
-                                            </tr>
-                                        {% endif %}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {% if employees.has_other_pages %}
-                            <div class="d-flex justify-content-between align-items-center mt-4 px-2 pt-3 border-top border-light border-opacity-50">
-                                <div class="text-secondary small fw-semibold">
-                                    Showing employees {{ employees.start_index }} to {{ employees.end_index }} of {{ employees.paginator.count }}
-                                </div>
-                                <nav aria-label="Employee directory pagination layout">
-                                    <ul class="pagination pagination-sm m-0 gap-1 border-0">
-                                        {% if employees.has_previous %}
-                                            <li class="page-item">
-                                                <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-dark shadow-sm" href="?emp_page={{ employees.previous_page_number }}{% if request.GET.task_page %}&task_page={{ request.GET.task_page }}{% endif %}">
-                                                    <i class="bi bi-chevron-left" style="font-size: 10px;"></i>
-                                                </a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link rounded-3 border bg-light px-3 py-2 text-muted"><i class="bi bi-chevron-left" style="font-size: 10px;"></i></span>
-                                            </li>
-                                        {% endif %}
-
-                                        {% for num in employees.paginator.page_range %}
-                                            {% if employees.number == num %}
-                                                <li class="page-item active" aria-current="page">
-                                                    <span class="page-link rounded-3 border-0 px-3 py-2 fw-bold text-center bg-primary text-white shadow-sm">{{ num }}</span>
-                                                </li>
-                                            {% elif num > employees.number|add:'-3' and num < employees.number|add:'3' %}
-                                                <li class="page-item">
-                                                    <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-dark shadow-sm" href="?emp_page={{ num }}{% if request.GET.task_page %}&task_page={{ request.GET.task_page }}{% endif %}">{{ num }}</a>
-                                                </li>
+            <div class="tab-pane fade animate-fade-in" id="usersPane" role="tabpanel" aria-labelledby="users-tab">
+                <div class="dashboard-metric-card shadow-sm p-4 border border-secondary border-opacity-15 mb-5 bg-white rounded-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                        <h5 class="fw-bold text-dark m-0"><i class="bi bi-people-fill me-2 text-primary"></i>Employee Profiles</h5>
+                        <span class="badge bg-success rounded-pill px-2.5 py-1 me-2 small fw-bold" style="font-size: 11px;"><span class="spinner-grow spinner-grow-sm me-1" style="width: 7px; height: 7px;"></span>Active Employee Directory</span>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0" style="border-collapse: separate; border-spacing: 0 12px;">
+                            <thead class="bg-light text-secondary border-bottom">
+                                <tr class="small text-uppercase fw-bold" style="background-color: #f1f5f9; color: #475569;">
+                                    <th class="border-0 py-3 ps-3 rounded-start-3">Name</th>
+                                    <th class="border-0 py-3">Employee ID</th>
+                                    <th class="border-0 py-3">Email Address</th>
+                                    <th class="border-0 py-3">Phone</th>
+                                    <th class="border-0 py-3">Role</th>
+                                    <th class="border-0 py-3 text-center pe-3 rounded-end-3">Account Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if employees %}
+                                    {% for emp in employees %}
+                                    <tr class="custom-table-row rounded-3 shadow-sm border border-secondary border-opacity-10">
+                                        <td class="ps-3 py-3 rounded-start-3">
+                                            <div class="d-flex align-items-center gap-2.5">
+                                                <div class="bg-primary text-white fw-bold rounded-circle d-flex align-items-center justify-content-center small shadow-sm roster-avatar" data-name="{{ emp.first_name }} {{ emp.last_name }}" style="width: 35px; height: 35px; font-size: 12px;">
+                                                    {{ emp.first_name|slice:":1" }}{{ emp.last_name|slice:":1" }}
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold text-dark d-block lh-sm mb-0">{{ emp.first_name }} {{ emp.last_name }}</span>
+                                                    <small class="text-secondary opacity-75" style="font-size: 11px;">Joined: {{ emp.date_joined|date:"M d, Y"|default:"Recent" }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 font-monospace fw-semibold text-primary" style="font-size: 13px;">
+                                            {{ emp.username }}
+                                        </td>
+                                        <td class="py-3">
+                                            <a href="mailto:{{ emp.email }}" class="text-decoration-none text-dark fw-medium small d-flex align-items-center gap-1.5">
+                                                <i class="bi bi-envelope-fill text-secondary opacity-50"></i>{{ emp.email }}
+                                            </a>
+                                        </td>
+                                        <td class="py-3 small text-secondary font-monospace">
+                                            {% if emp.phone_number %}
+                                                <i class="bi bi-telephone-fill text-secondary opacity-50 me-1"></i>{{ emp.phone_number }}
+                                            {% elif emp.profile and emp.profile.phone_number %}
+                                                <i class="bi bi-telephone-fill text-secondary opacity-50 me-1"></i>{{ emp.profile.phone_number }}
+                                            {% else %}
+                                                <span class="text-secondary opacity-50 font-sans-serif text-italic small">Not Added</span>
                                             {% endif %}
-                                        {% endfor %}
-
-                                        {% if employees.has_next %}
-                                            <li class="page-item">
-                                                <a class="page-link rounded-3 border px-3 py-2 fw-bold text-center bg-white text-dark shadow-sm" href="?emp_page={{ employees.next_page_number }}{% if request.GET.task_page %}&task_page={{ request.GET.task_page }}{% endif %}">
-                                                    <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
-                                                </a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link rounded-3 border bg-light px-3 py-2 text-muted"><i class="bi bi-chevron-right" style="font-size: 10px;"></i></span>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </nav>
-                            </div>
-                            {% endif %}
-                        </div>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="badge bg-white text-dark border border-secondary border-opacity-20 px-2.5 py-1.5 rounded-3 font-sans-serif small">
+                                                <i class="bi bi-briefcase-fill text-primary me-1"></i>
+                                                {% if emp.role %}
+                                                    {{ emp.role }}
+                                                {% elif emp.profile and emp.profile.role %}
+                                                    {{ emp.profile.role }}
+                                                {% else %}
+                                                    Software Engineer Track
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center py-3 pe-3 rounded-end-3">
+                                            {% if emp.is_superuser %}
+                                                <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold small shadow-sm">Admin</span>
+                                            {% elif emp.is_staff %}
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary-emphasis px-3 py-1.5 rounded-pill fw-semibold small">Manager</span>
+                                            {% else %}
+                                                <span class="badge bg-white text-secondary border border-secondary border-opacity-20 px-3 py-1.5 rounded-pill fw-medium small">Employee</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="6" class="text-center text-secondary py-5 rounded-3 bg-light border border-secondary border-opacity-10">No employee profiles exist in the system database.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -392,51 +361,201 @@
     </div>
 </div>
 
+<div class="modal fade" id="viewTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="fw-bold text-dark m-0"><i class="bi bi-info-circle-fill text-primary me-2"></i>Task Details</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="mb-3">
+                    <label class="text-secondary small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Task Title</label>
+                    <p id="viewModalTitle" class="fw-bold text-primary mb-0 fs-5"></p>
+                </div>
+                <div class="mb-4">
+                    <label class="text-secondary small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Description</label>
+                    <div class="bg-light p-3 rounded-3 text-secondary small text-wrap border border-secondary border-opacity-15" id="viewModalDesc" style="min-height: 60px;"></div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="text-secondary small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Assigned To</label>
+                        <span id="viewModalUser" class="badge bg-light text-dark border border-secondary border-opacity-15 px-3 py-2 rounded-3 fw-medium w-100 text-start"></span>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-secondary small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Priority</label>
+                        <span id="viewModalPriority" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center shadow-sm"></span>
+                    </div>
+                    <div class="col-6">
+                        <label class="text-secondary small d-block fw-bold text-uppercase mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Status</label>
+                        <span id="viewModalStatus" class="badge px-3 py-2 rounded-3 fw-semibold w-100 text-center shadow-sm"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <form id="editTaskForm">
+                <input type="hidden" id="editModalTaskId">
+                <div class="modal-header border-bottom border-light">
+                    <h5 class="fw-bold text-primary m-0"><i class="bi bi-pencil-square text-primary me-2"></i>Modify Task Info</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">Task Title <span class="text-danger">*</span></label>
+                        <input type="text" id="editModalTitleInput" class="form-control py-2 border-secondary border-opacity-25 text-dark" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">Description</label>
+                        <textarea id="editModalDescInput" class="form-control border-secondary border-opacity-25 text-dark" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small fw-bold">Assign To <span class="text-danger">*</span></label>
+                        <select id="editModalUserInput" class="form-select py-2 border-secondary border-opacity-25 text-dark" required>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.first_name }} {{ employee.last_name }} ({{ employee.username }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small fw-bold">Priority <span class="text-danger">*</span></label>
+                            <select id="editModalPriorityInput" class="form-select py-2 border-secondary border-opacity-25 text-dark" required>
+                                <option value="1_HIGH">High</option>
+                                <option value="2_MEDIUM">Medium</option>
+                                <option value="3_LOW">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small fw-bold">Status <span class="text-danger">*</span></label>
+                            <select id="editModalStatusInput" class="form-select py-2 border-secondary border-opacity-25 text-dark" required>
+                                <option value="PENDING">Pending</option>
+                                <option value="PROGRESSING">In Progress</option>
+                                <option value="COMPLETED">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-secondary btn-sm px-4 py-2 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 py-2 ui-pill-btn fw-bold shadow-sm text-white">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="fw-bold text-dark m-0"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Delete Task?</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-3">
+                <p class="text-secondary small mb-0">Are you sure you want to permanently delete this task? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary btn-sm px-3 py-1.5 ui-pill-btn shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger btn-sm px-3 py-1.5 ui-pill-btn fw-bold shadow-sm text-white">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-    .ui-pill-btn {
-        border-radius: 10px;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+    /* Custom Table Subtle Accent */
     .custom-table-row {
         background-color: #ffffff;
-        transition: all 0.15s ease-in-out;
+        transition: background-color 0.15s ease-in-out;
     }
     .custom-table-row:hover {
-        background-color: #f8fafc !important;
-        transform: scale(1.002);
+        background-color: #f8fafc;
     }
-    .dashboard-metric-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+
+    /* Subtle Pill Buttons Base Styling */
     .btn-priority-pill {
-        border: 1px solid transparent;
+        color: #475569;
         background-color: #ffffff;
-        color: #64748b;
+        border: 1px solid rgba(203, 213, 225, 0.6);
         border-radius: 6px;
-        font-size: 12px;
-        transition: all 0.15s ease;
+        transition: all 0.2s ease-in-out;
     }
-    .btn-priority-high:hover, .btn-check:checked + .btn-priority-high {
-        background-color: #fef2f2 !important;
-        color: #dc2626 !important;
-        border-color: #fee2e2 !important;
+    .btn-priority-pill:hover {
+        background-color: #f1f5f9;
+        color: #1e293b;
     }
-    .btn-priority-medium:hover, .btn-check:checked + .btn-priority-medium {
-        background-color: #fffbeb !important;
-        color: #d97706 !important;
-        border-color: #fef3c7 !important;
+    
+    /* Dynamic Priority Toggle Colors */
+    .btn-check:checked + .btn-priority-high {
+        color: #ffffff !important;
+        background-color: #dc3545 !important;
+        border-color: #dc3545 !important;
+        box-shadow: 0 4px 6px -1px rgba(220, 53, 69, 0.2);
     }
-    .btn-priority-low:hover, .btn-check:checked + .btn-priority-low {
-        background-color: #f0fdf4 !important;
-        color: #16a34a !important;
-        border-color: #dcfce7 !important;
+    .btn-check:checked + .btn-priority-medium {
+        color: #ffffff !important;
+        background-color: #eab308 !important;
+        border-color: #eab308 !important;
+        box-shadow: 0 4px 6px -1px rgba(234, 179, 8, 0.2);
+    }
+    .btn-check:checked + .btn-priority-low {
+        color: #ffffff !important;
+        background-color: #16a34a !important;
+        border-color: #16a34a !important;
+        box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);
+    }
+
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #dc3545 !important;
+        background-image: none !important;
+        box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15) !important;
     }
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(4px); }
+        from { opacity: 0; transform: translateY(-5px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in {
-        animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: fadeIn 0.2s ease-out forwards;
+    }
+    #dashboardTabs .nav-link {
+        color: #64748b;
+        background-color: transparent;
+        border: 1px solid transparent;
+        transition: all 0.2s ease-in-out;
+    }
+    #dashboardTabs .nav-link.active {
+        color: #ffffff !important;
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.15);
+    }
+    #dashboardTabs .nav-link:hover:not(.active) {
+        background-color: #f1f5f9;
+        color: #0d6efd;
+    }
+    .gap-2.5 { gap: 0.65rem !important; }
+    .table-responsive::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
     }
 </style>
 {% endblock %}
@@ -445,211 +564,306 @@
 <script>
     function showToast(message, type = 'success') {
         const toastEl = document.getElementById('liveToast');
-        const toastIcon = document.getElementById('toastIcon');
         const toastMessage = document.getElementById('toastMessage');
-
-        toastEl.className = `toast align-items-center text-white border-0 rounded-3 shadow-lg bg-${type === 'success' ? 'success' : 'danger'}`;
-        toastIcon.className = `bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'}`;
+        const toastIcon = document.getElementById('toastIcon');
+        
         toastMessage.innerText = message;
+        toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+        toastIcon.classList.remove('bi-check-circle-fill', 'bi-exclamation-triangle-fill', 'bi-info-circle-fill');
+
+        if (type === 'success') {
+            toastEl.classList.add('bg-success');
+            toastIcon.classList.add('bi-check-circle-fill');
+        } else if (type === 'danger') {
+            toastEl.classList.add('bg-danger');
+            toastIcon.classList.add('bi-exclamation-triangle-fill');
+        } else {
+            toastEl.classList.add('bg-warning', 'text-dark');
+            toastIcon.classList.add('bi-info-circle-fill');
+        }
 
         const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
         toast.show();
     }
 
+    // Modal Parameter Injection Listeners
+    const viewModalEl = document.getElementById('viewTaskModal');
+    viewModalEl.addEventListener('show.bs.modal', function (event) {
+        const triggerBtn = event.relatedTarget;
+        
+        document.getElementById('viewModalTitle').innerText = triggerBtn.getAttribute('data-title');
+        document.getElementById('viewModalDesc').innerText = triggerBtn.getAttribute('data-desc') || 'No description provided.';
+        document.getElementById('viewModalUser').innerHTML = `<i class="bi bi-person me-2 text-muted"></i>` + triggerBtn.getAttribute('data-user');
+        
+        const priority = triggerBtn.getAttribute('data-priority');
+        const priorityBadge = document.getElementById('viewModalPriority');
+        priorityBadge.innerText = priority;
+        priorityBadge.className = 'badge px-3 py-2 rounded-3 fw-semibold w-100 text-center ';
+        if(priority === 'High') priorityBadge.classList.add('bg-danger', 'bg-opacity-10', 'text-danger');
+        else if(priority === 'Medium') priorityBadge.classList.add('bg-warning', 'bg-opacity-10', 'text-warning-emphasis');
+        else priorityBadge.classList.add('bg-success', 'bg-opacity-10', 'text-success');
+
+        const status = triggerBtn.getAttribute('data-status');
+        const statusBadge = document.getElementById('viewModalStatus');
+        statusBadge.innerText = status;
+        statusBadge.className = 'badge px-3 py-2 rounded-3 fw-semibold w-100 text-center ';
+        if(status === 'Completed') statusBadge.classList.add('bg-success', 'bg-opacity-10', 'text-success');
+        else if(status === 'In Progress') statusBadge.classList.add('bg-primary', 'bg-opacity-10', 'text-primary');
+        else statusBadge.classList.add('bg-secondary', 'bg-opacity-10', 'text-secondary-emphasis');
+    });
+
+    const editModalEl = document.getElementById('editTaskModal');
+    editModalEl.addEventListener('show.bs.modal', function (event) {
+        const triggerBtn = event.relatedTarget;
+        
+        document.getElementById('editModalTaskId').value = triggerBtn.getAttribute('data-id');
+        document.getElementById('editModalTitleInput').value = triggerBtn.getAttribute('data-title');
+        document.getElementById('editModalDescInput').value = triggerBtn.getAttribute('data-desc');
+        document.getElementById('editModalUserInput').value = triggerBtn.getAttribute('data-user-id');
+        document.getElementById('editModalPriorityInput').value = triggerBtn.getAttribute('data-priority');
+        document.getElementById('editModalStatusInput').value = triggerBtn.getAttribute('data-status');
+    });
+
+    // Delete Modal State Capture
+    let taskToDeleteId = null;
+    const deleteModalEl = document.getElementById('deleteConfirmModal');
+    deleteModalEl.addEventListener('show.bs.modal', function (event) {
+        const triggerBtn = event.relatedTarget;
+        taskToDeleteId = triggerBtn.getAttribute('data-id');
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (!taskToDeleteId) return;
+
+        fetch(`/api/tasks/${taskToDeleteId}/delete/`, {
+            method: 'DELETE',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'}
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') { 
+                const row = document.getElementById(`admin-task-row-${taskToDeleteId}`);
+                if(row) row.remove();
+                showToast('Task deleted successfully.');
+                const modalInstance = bootstrap.Modal.getInstance(deleteModalEl);
+                if (modalInstance) modalInstance.hide();
+            } else {
+                showToast(data.error || 'Failed to delete task.', 'danger');
+            }
+        })
+        .catch(() => showToast('Could not connect to the server.', 'danger'));
+    });
+
+    // Form Submission Handler: Save Task Changes to Database
+    document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const taskId = document.getElementById('editModalTaskId').value;
+        
+        const formData = new URLSearchParams();
+        formData.append('title', document.getElementById('editModalTitleInput').value.trim());
+        formData.append('description', document.getElementById('editModalDescInput').value.trim());
+        formData.append('user_id', document.getElementById('editModalUserInput').value);
+        formData.append('assigned_to', document.getElementById('editModalUserInput').value); 
+        formData.append('priority', document.getElementById('editModalPriorityInput').value);
+        formData.append('status', document.getElementById('editModalStatusInput').value);
+
+        fetch(`/api/tasks/${taskId}/update/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: formData.toString()
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Network failure during updating.');
+            return res.json();
+        })
+        .then(data => {
+            if (data.status === 'success' || data.success) {
+                showToast('Task updated successfully.');
+                const modalInstance = bootstrap.Modal.getInstance(editModalEl);
+                if (modalInstance) modalInstance.hide();
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast(data.error || 'Failed to save changes.', 'danger');
+            }
+        })
+        .catch(() => showToast('Error saving updates to the database.', 'danger'));
+    });
+
+    // Search Engine Filter Functionality
+    document.getElementById('taskSearchInput').addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.task-searchable-row');
+        const fallbackRow = document.getElementById('noResultsMatchRow');
+        const initialFallback = document.getElementById('noTasksFallback');
+        
+        if (initialFallback && initialFallback.isConnected && !rows.length) return;
+
+        let itemsFound = false;
+
+        rows.forEach(row => {
+            const title = row.querySelector('.searchable-title').innerText.toLowerCase();
+            const desc = row.querySelector('.searchable-desc').innerText.toLowerCase();
+            const user = row.querySelector('.searchable-user').innerText.toLowerCase();
+
+            if (title.includes(query) || desc.includes(query) || user.includes(query)) {
+                row.classList.remove('d-none');
+                itemsFound = true;
+            } else {
+                row.classList.add('d-none');
+            }
+        });
+
+        if (!itemsFound) {
+            fallbackRow.classList.remove('d-none');
+        } else {
+            fallbackRow.classList.add('d-none');
+        }
+    });
+
+    (function generateAdminAvatar() {
+        const nameStr = "{{ request.user.username|escapejs }}";
+        const blocks = nameStr.trim().split(/\s+/);
+        let initials = "";
+        if (blocks.length > 1) {
+            initials = blocks[0][0].toUpperCase() + blocks[1][0].toUpperCase();
+        } else if (blocks.length === 1 && blocks[0].length > 0) {
+            initials = blocks[0][0].toUpperCase();
+        }
+        const palette = ['#0d6efd', '#0b5ed7', '#1e40af'];
+        const randomColor = palette[Math.floor(Math.random() * palette.length)];
+        const avatarNode = document.getElementById('adminAvatarNode');
+        if(avatarNode) { avatarNode.innerText = initials || "A"; avatarNode.style.backgroundColor = randomColor; }
+    })();
+
+    (function mapEmployeeAvatarPalettes() {
+        const structuralPalettes = ['#0d6efd', '#0284c7', '#2563eb', '#0369a1', '#1d4ed8', '#0f766e', '#4338ca'];
+        document.querySelectorAll('.roster-avatar').forEach((avatar, index) => {
+            const signatureIndex = index % structuralPalettes.length;
+            avatar.style.backgroundColor = structuralPalettes[signatureIndex];
+        });
+    })();
+
     document.getElementById('createUserForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const pwd = document.getElementById('new_password').value;
-        const confPwd = document.getElementById('new_password_confirm').value;
-        if (pwd !== confPwd) {
-            showToast('Passwords configuration layout matching confirmation mismatch exception!', 'danger');
+        const password = document.getElementById('new_password').value;
+        const confirmPassword = document.getElementById('new_password_confirm').value;
+
+        if (password !== confirmPassword) {
+            showToast('Passwords do not match.', 'danger');
             return;
         }
 
-        const phoneCombinedStr = document.getElementById('new_phone_code').value + document.getElementById('new_phone_number').value;
+        const phoneCode = document.getElementById('new_phone_code').value;
+        const rawPhoneNum = document.getElementById('new_phone_number').value.trim();
+        const fullPhoneNumber = rawPhoneNum ? (phoneCode + rawPhoneNum) : "";
 
-        fetch('/api/admin/users/create/', {
+        fetch("{% url 'admin_create_user' %}", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
             body: JSON.stringify({
-                first_name: document.getElementById('new_first_name').value,
-                last_name: document.getElementById('new_last_name').value,
-                employee_id: document.getElementById('new_employee_id').value,
-                email: document.getElementById('new_email').value,
-                phone_number: phoneCombinedStr,
-                role: document.getElementById('new_role').value,
-                password: pwd
+                first_name: document.getElementById('new_first_name').value.trim(),
+                last_name: document.getElementById('new_last_name').value.trim(),
+                username: document.getElementById('new_employee_id').value.trim(), 
+                email: document.getElementById('new_email').value.trim(),
+                phone_number: fullPhoneNumber,
+                role: document.getElementById('new_role').value, 
+                password: password,
+                is_staff: false 
             })
         })
         .then(res => res.json())
         .then(data => {
-            if (data.status === 'success') {
-                showToast('Account credentials compiled index database structure saved successfully.');
+            if(data.status === 'success') { 
+                showToast('Employee account created successfully.');
                 setTimeout(() => location.reload(), 1200);
-            } else {
-                showToast(data.error || 'Could not compile provisioning target block metrics profiles.', 'danger');
+            } else { 
+                showToast(data.error, 'danger'); 
             }
-        })
-        .catch(err => {
-            console.error(err);
-            showToast('Link failure mapping endpoint target exceptions caught.', 'danger');
         });
     });
 
     document.getElementById('assignTaskForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const titleEl = document.getElementById('task_title');
-        const userEl = document.getElementById('task_user');
+        const titleInput = document.getElementById('task_title');
+        const userInput = document.getElementById('task_user');
+        const activePriority = document.querySelector('input[name="priority_opts"]:checked');
         const warningCard = document.getElementById('validationWarningCard');
 
-        if (!titleEl.value.trim() || !userEl.value) {
+        let isValid = true;
+
+        if (!titleInput.value.trim()) {
+            titleInput.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            titleInput.classList.remove('is-invalid');
+        }
+
+        if (!userInput.value) {
+            userInput.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            userInput.classList.remove('is-invalid');
+        }
+
+        if (!activePriority) {
+            isValid = false;
+        }
+
+        if (!isValid) {
             warningCard.classList.remove('d-none');
-            if (!titleEl.value.trim()) titleEl.classList.add('is-invalid');
-            if (!userEl.value) userEl.classList.add('is-invalid');
             return;
         }
 
         warningCard.classList.add('d-none');
-        titleEl.classList.remove('is-invalid');
-        userEl.classList.remove('is-invalid');
 
-        fetch('/api/admin/tasks/assign/', {
+        fetch("{% url 'admin_assign_task' %}", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
             body: JSON.stringify({
-                title: titleEl.value.trim(),
-                description: document.getElementById('task_desc').value.trim(),
-                user_id: userEl.value,
-                priority: document.querySelector('input[name="priority_opts"]:checked').value
+                title: titleInput.value,
+                description: document.getElementById('task_desc').value,
+                user_id: userInput.value,
+                priority: activePriority.value
             })
         })
         .then(res => res.json())
         .then(data => {
-            if (data.status === 'success') {
-                showToast('Task instantiation payload deployed and dispatched safely.');
+            if(data.status === 'success') { 
+                showToast('Task assigned successfully.');
                 setTimeout(() => location.reload(), 1200);
-            } else {
-                showToast(data.error || 'Error processing queue elements parameters indexes updates.', 'danger');
+            } else { 
+                showToast(data.error, 'danger'); 
             }
-        })
-        .catch(err => {
-            console.error(err);
-            showToast('Endpoint configuration target pipeline mapping exception.', 'danger');
         });
     });
 
-    function deleteTaskByAdmin(taskId) {
-        if (!confirm('Are you completely sure you want to scrub this operation sequence records metrics data permanently?')) return;
+    function checkValidationState() {
+        const titleInput = document.getElementById('task_title');
+        const userInput = document.getElementById('task_user');
+        const warningCard = document.getElementById('validationWarningCard');
 
-        fetch(`/api/tasks/${taskId}/delete/`, {
-            method: 'DELETE',
-            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success') {
-                showToast('Task scrub sequence index deleted successfully.');
-                const targetRow = document.getElementById(`admin-task-row-${taskId}`);
-                if (targetRow) {
-                    targetRow.style.transform = 'scale(0.95)';
-                    targetRow.style.opacity = '0';
-                    setTimeout(() => {
-                        targetRow.remove();
-                        if (document.querySelectorAll('.task-searchable-row').length === 0) {
-                            document.querySelector('#tasksTable tbody').innerHTML = `<tr id="emptyTaskFallbackRow"><td colspan="5" class="text-center text-muted py-5 bg-light">No tasks found. Try assigning one above!</td></tr>`;
-                        }
-                    }, 200);
-                }
-            } else {
-                showToast(data.error || 'Scrub action failed.', 'danger');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            showToast('Network interface handshake exception.', 'danger');
-        });
+        if (titleInput.value.trim() && userInput.value) {
+            warningCard.classList.add('d-none');
+        }
     }
 
-    document.getElementById('taskSearchInput').addEventListener('input', function(e) {
-        const query = e.target.value.toLowerCase().trim();
-        const operationsTabActive = document.getElementById('operations-tab').classList.contains('active');
-        
-        if (operationsTabActive) {
-            const rows = document.querySelectorAll('.task-searchable-row');
-            let matchedRows = 0;
-
-            rows.forEach(row => {
-                const titleText = row.querySelector('.searchable-title').innerText.toLowerCase();
-                const descText = row.querySelector('.searchable-desc').innerText.toLowerCase();
-                const userText = row.querySelector('.searchable-user').innerText.toLowerCase();
-
-                if (titleText.includes(query) || descText.includes(query) || userText.includes(query)) {
-                    row.removeAttribute('style');
-                    matchedRows++;
-                } else {
-                    row.style.setProperty('display', 'none', 'important');
-                }
-            });
-
-            const fallbackRow = document.getElementById('emptyTaskFallbackRow');
-            if (matchedRows === 0) {
-                if (!fallbackRow) {
-                    const tbody = document.querySelector('#tasksTable tbody');
-                    const tr = document.createElement('tr');
-                    tr.id = 'emptyTaskFallbackRow';
-                    tr.innerHTML = `<td colspan="5" class="text-center text-muted py-5 bg-light">No tasks metrics match search boundaries context criteria filters parameters.</td>`;
-                    tbody.appendChild(tr);
-                } else {
-                    fallbackRow.querySelector('td').innerText = 'No tasks metrics match search boundaries context criteria filters parameters.';
-                    fallbackRow.style.display = '';
-                }
-            } else if (fallbackRow) {
-                fallbackRow.style.display = 'none';
-            }
-        } else {
-            const userCards = document.querySelectorAll('.user-card-node');
-            let matchedCards = 0;
-
-            userCards.forEach(card => {
-                const metaStr = card.getAttribute('data-search-string');
-                if (metaStr.includes(query)) {
-                    card.removeAttribute('style');
-                    matchedCards++;
-                } else {
-                    card.style.setProperty('display', 'none', 'important');
-                }
-            });
-
-            const fallbackCard = document.getElementById('emptyEmployeesFallbackCard');
-            if (matchedCards === 0) {
-                if (!fallbackCard) {
-                    const tbody = document.querySelector('#employeesTable tbody');
-                    const tr = document.createElement('tr');
-                    tr.id = 'emptyEmployeesFallbackCard';
-                    tr.innerHTML = `<td colspan="4" class="text-center text-muted py-5 bg-light">No registered identity records criteria queries elements found here.</td>`;
-                    tbody.appendChild(tr);
-                } else {
-                    fallbackCard.style.display = '';
-                }
-            } else if (fallbackCard) {
-                fallbackCard.style.display = 'none';
-            }
+    document.getElementById('task_title').addEventListener('input', function() {
+        if (this.value.trim()) {
+            this.classList.remove('is-invalid');
+            checkValidationState();
         }
     });
 
-    document.querySelectorAll('#dashboardTabs button').forEach(tabBtn => {
-        tabBtn.addEventListener('shown.bs.tab', () => {
-            document.getElementById('taskSearchInput').value = '';
-            
-            document.querySelectorAll('.task-searchable-row').forEach(r => r.removeAttribute('style'));
-            const f1 = document.getElementById('emptyTaskFallbackRow');
-            if (f1) f1.style.display = 'none';
-
-            document.querySelectorAll('.user-card-node').forEach(c => c.removeAttribute('style'));
-            const f2 = document.getElementById('emptyEmployeesFallbackCard');
-            if (f2) f2.style.display = 'none';
-        });
+    document.getElementById('task_user').addEventListener('change', function() {
+        if (this.value) {
+            this.classList.remove('is-invalid');
+            checkValidationState();
+        }
     });
 </script>
 {% endblock %}
