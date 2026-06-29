@@ -876,24 +876,21 @@
 // Admin Dashboard AJAX Pagination Mechanics
 // ==========================================
 document.addEventListener("click", function (e) {
-    // Check if the click target or its parent is part of our pagination navbar links
     const link = e.target.closest(".pagination a");
     if (!link) return;
 
     e.preventDefault();
 
-    // Perform an asynchronous swap request
     fetch(link.href, {
         headers: {
             "X-Requested-With": "XMLHttpRequest"
         }
     })
     .then(response => {
-        if (!response.ok) throw new Error("Network pagination payload failure");
+        if (!response.ok) throw new Error("Pagination network error");
         return response.text();
     })
     .then(html => {
-        // Rewrite the internal contents elegantly preserving layout states
         document.getElementById("taskQueueContainer").innerHTML = html;
     })
     .catch(err => console.error("Error executing page transition:", err));
