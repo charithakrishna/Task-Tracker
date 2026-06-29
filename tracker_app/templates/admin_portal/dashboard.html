@@ -191,84 +191,90 @@
                                 </div>
                             </div>
                             
-                            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                                <table class="table align-middle mb-0" id="tasksTable" style="border-collapse: separate; border-spacing: 0 10px;">
-                                    <thead class="sticky-top bg-light text-secondary border-bottom" style="z-index: 5;">
-                                        <tr class="small text-uppercase fw-bold" style="background-color: #f1f5f9; color: #475569;">
-                                            <th class="border-0 py-3 ps-3 rounded-start-3">Task Details</th>
-                                            <th class="border-0 py-3">Assigned To</th>
-                                            <th class="border-0 py-3">Priority</th>
-                                            <th class="border-0 py-3">Status</th>
-                                            <th class="border-0 py-3 text-center pe-3 rounded-end-3">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% if all_tasks %}
-                                            {% for task in all_tasks %}
-                                            <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 420px;">
-                                                <span class="fw-bold text-dark mb-0 d-block searchable-title">
-                                                   {{ task.title }}
-                                                    </span>
-
-                                                <small class="text-secondary d-block searchable-desc opacity-75"
-                                                       style="white-space: normal; word-break: break-word;">
-                                                    {{ task.description }}
-                                                </small>                                          
-                                            </td>
-                                                <td class="py-3 task-user-cell">
-                                                    <span class="badge bg-white text-secondary border border-secondary border-opacity-20 rounded-3 px-2 py-1.5 searchable-user">
-                                                        <i class="bi bi-person-fill m-1 text-primary"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
+                            <div id="taskQueueContainer" class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                                <div class="table-responsive">
+                                    <table class="table align-middle mb-0" id="activeTasksTable">
+                                        <thead>
+                                            <tr class="text-secondary small text-uppercase fw-bold text-muted bg-light" style="font-size:11px;">
+                                                <th class="ps-4 py-3">Task Details</th>
+                                                <th>Assigned To</th>
+                                                <th>Priority</th>
+                                                <th>Status</th>
+                                                <th class="text-end pe-4">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if tasks %}
+                                            {% for task in tasks %}
+                                            <tr class="border-bottom transition-table-row" id="task-card-{{ task.id }}">
+                                                <td class="ps-4 py-3">
+                                                    <div class="d-flex flex-column">
+                                                        <span class="fw-bold text-dark">{{ task.title }}</span>
+                                                        <small class="text-muted text-truncate" style="max-width: 250px;">{{ task.description }}</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2.5 py-1 fw-medium small">
+                                                        {{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }}
                                                     </span>
                                                 </td>
-                                                <td class="py-3">
-                                                    <span class="badge {% if task.priority == '1_HIGH' %}bg-danger bg-opacity-10 text-danger{% elif task.priority == '2_MEDIUM' %}bg-warning bg-opacity-10 text-warning-emphasis{% else %}bg-success bg-opacity-10 text-success{% endif %} px-2 py-1.5 rounded-3">
-                                                        {{ task.get_priority_display }}
-                                                    </span>
+                                                <td>
+                                                    {% if task.priority == 'HIGH' %}
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger fw-semibold rounded-3">High</span>
+                                                    {% elif task.priority == 'MEDIUM' %}
+                                                        <span class="badge bg-primary bg-opacity-10 text-primary fw-semibold rounded-3">Medium</span>
+                                                    {% else %}
+                                                        <span class="badge bg-success bg-opacity-10 text-success fw-semibold rounded-3">Low</span>
+                                                    {% endif %}
                                                 </td>
-                                                <td class="py-3">
-                                                    <span class="badge {% if task.status == 'COMPLETED' %}bg-success bg-opacity-10 text-success{% elif task.status == 'PROGRESSING' %}bg-primary bg-opacity-10 text-primary{% else %}bg-secondary bg-opacity-10 text-secondary-emphasis{% endif %} px-2 py-1.5 rounded-3">
+                                                <td>
+                                                    <span id="status-badge-{{ task.id }}" class="badge {% if task.status == 'COMPLETED' %}bg-success text-success{% elif task.status == 'PROGRESSING' %}bg-primary text-primary{% else %}bg-warning text-warning-emphasis{% endif %} bg-opacity-10 fw-bold rounded-3">
                                                         {{ task.get_status_display }}
                                                     </span>
                                                 </td>
-                                                <td class="text-center py-3 pe-3 rounded-end-3">
-                                                    <div class="d-flex justify-content-center gap-2">
-                                                        <button class="btn btn-link link-secondary p-0 border-0 shadow-none" title="View details"
-                                                                data-bs-toggle="modal" data-bs-target="#viewTaskModal"
-                                                                data-title="{{ task.title }}"
-                                                                data-desc="{{ task.description }}"
-                                                                data-user="{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})"
-                                                                data-priority="{{ task.get_priority_display }}"
-                                                                data-status="{{ task.get_status_display }}">
-                                                            <i class="bi bi-eye-fill fs-5 opacity-75"></i>
-                                                        </button>
-                                                        <!-- <button class="btn btn-link link-primary p-0 border-0 shadow-none" title="Edit task"
-                                                                data-bs-toggle="modal" data-bs-target="#editTaskModal"
-                                                                data-id="{{ task.id }}"
-                                                                data-title="{{ task.title }}"
-                                                                data-desc="{{ task.description }}"
-                                                                data-user-id="{{ task.assigned_to.id }}"
-                                                                data-priority="{{ task.priority }}"
-                                                                data-status="{{ task.status }}">
-                                                            <i class="bi bi-pencil-square fs-5"></i>
-                                                        </button> -->
-                                                        <button class="btn btn-link link-danger p-0 border-0 shadow-none text-danger" title="Delete task"
-                                                                data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-                                                                data-id="{{ task.id }}">
-                                                            <i class="bi bi-trash-fill fs-5 opacity-75"></i>
-                                                        </button>
-                                                    </div>
+                                                <td class="text-end pe-4">
+                                                    <button onclick="deleteTask({{ task.id }})" class="btn btn-link link-danger p-0 border-0 fs-5" title="Delete Task">
+                                                        <i class="bi bi-trash3-fill"></i>
+                                                    </button>
                                                 </td>
                                             </tr>
                                             {% endfor %}
                                         {% else %}
-                                            <tr id="noTasksFallback"><td colspan="5" class="text-center text-secondary py-5 rounded-3 bg-light border border-secondary border-opacity-10">No tasks found.</td></tr>
+                                            <tr>
+                                                <td colspan="5" class="text-center py-5 text-muted">
+                                                    🎉 No tasks currently distributed in system queue.
+                                                </td>
+                                            </tr>
                                         {% endif %}
-                                        
-                                        <tr id="noResultsMatchRow" class="d-none">
-                                            <td colspan="5" class="text-center text-secondary py-5 rounded-3 bg-light border border-secondary border-opacity-10">No tasks or employee data found matching your search.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            
+                                {% if tasks.has_other_pages %}
+                                <div class="d-flex justify-content-center bg-light border-top p-4">
+                                    <nav>
+                                        <ul class="pagination pagination-sm m-0">
+                                            {% if tasks.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link ajax-page shadow-none" href="?page={{ tasks.previous_page_number }}">Previous</a>
+                                            </li>
+                                            {% endif %}
+                            
+                                            {% for num in tasks.paginator.page_range %}
+                                            <li class="page-item {% if tasks.number == num %}active{% endif %}">
+                                                <a class="page-link ajax-page shadow-none" href="?page={{ num }}">{{ num }}</a>
+                                            </li>
+                                            {% endfor %}
+                            
+                                            {% if tasks.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link ajax-page shadow-none" href="?page={{ tasks.next_page_number }}">Next</a>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -865,5 +871,33 @@
             checkValidationState();
         }
     });
+
+    // ==========================================
+// Admin Dashboard AJAX Pagination Mechanics
+// ==========================================
+document.addEventListener("click", function (e) {
+    // Check if the click target or its parent is part of our pagination navbar links
+    const link = e.target.closest(".pagination a");
+    if (!link) return;
+
+    e.preventDefault();
+
+    // Perform an asynchronous swap request
+    fetch(link.href, {
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Network pagination payload failure");
+        return response.text();
+    })
+    .then(html => {
+        // Rewrite the internal contents elegantly preserving layout states
+        document.getElementById("taskQueueContainer").innerHTML = html;
+    })
+    .catch(err => console.error("Error executing page transition:", err));
+});
+
 </script>
 {% endblock %}
