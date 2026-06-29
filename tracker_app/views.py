@@ -259,16 +259,28 @@ def admin_login(request):
 def admin_dashboard(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
-        
-    # Modified to include all workers. Since the create form marks created accounts as staff/managers, 
-    # we filter out superusers only so that employee lists render correctly.
-    employees = User.objects.filter(is_superuser=False)
-    all_tasks = Task.objects.all()
-    
-    return render(request, 'admin_portal/dashboard.html', {
-        'employees': employees,
-        'all_tasks': all_tasks
-    })
+
+    # Fetching raw data collections
+    all_employees = User.objects.filter(is_staff=False).select_related('profile').order_by('id')
+    raw_tasks = Task.objects.all().order_index_by_priority()
+
+    # Pagination configuration parameters
+    tasks_paginator = Paginator(raw_tasks, 5)
+    employees_paginator = Paginator(all_employees, 5)
+
+    # Resolving target pages from request mapping layers
+    task_page_num = request.GET.get('task_page', 1)
+    emp_page_num = request.GET.get('emp_page', 1)
+
+    paginated_tasks = tasks_paginator.get_page(task_page_num)
+    paginated_employees = employees_paginator.get_page(emp_page_num)
+
+    context = {
+        'all_tasks': paginated_tasks,
+        'employees': paginated_employees,
+        'raw_employees_count': all_employees.count(),  # Kept for display badge counts
+    }
+    return render(request, 'dashboard/admin.html', context)
 
 
 # --- NEW ADMIN API ENDPOINTS FOR CREATION / ASSIGNMENTS ---
