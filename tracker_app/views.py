@@ -280,9 +280,9 @@ def admin_dashboard(request):
     # 3. Handle asynchronous AJAX page shifts
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # Re-use your task queue or dashboard sub-container partial block
-        return render(request, 'task_queue.html', context)
+        return render(request, 'admin_portal/task_queue.html', context)
         
-    return render(request, 'dashboard.html', context)
+    return render(request, 'admin_portal/dashboard.html', context)
 
 
 # --- NEW ADMIN API ENDPOINTS FOR CREATION / ASSIGNMENTS ---
