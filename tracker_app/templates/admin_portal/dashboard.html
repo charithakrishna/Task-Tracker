@@ -205,11 +205,16 @@
                                     <tbody>
                                         {% if all_tasks %}
                                             {% for task in all_tasks %}
-                                            <tr id="admin-task-row-{{ task.id }}" class="custom-table-row rounded-3 shadow-sm task-searchable-row border border-secondary border-opacity-10">
-                                                <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 250px;">
-                                                    <span class="fw-bold text-dark mb-0 d-block searchable-title">{{ task.title }}</span>
-                                                    <small class="text-secondary d-block text-truncate searchable-desc opacity-75" style="max-width: 240px;">{{ task.description }}</small>
-                                                </td>
+                                            <td class="text-wrap ps-3 py-3 rounded-start-3 task-title-cell" style="max-width: 420px;">
+                                                <span class="fw-bold text-dark mb-0 d-block searchable-title">
+                                                   {{ task.title }}
+                                                    </span>
+
+                                                <small class="text-secondary d-block searchable-desc opacity-75"
+                                                       style="white-space: normal; word-break: break-word;">
+                                                    {{ task.description }}
+                                                </small>                                          
+                                            </td>
                                                 <td class="py-3 task-user-cell">
                                                     <span class="badge bg-white text-secondary border border-secondary border-opacity-20 rounded-3 px-2 py-1.5 searchable-user">
                                                         <i class="bi bi-person-fill m-1 text-primary"></i>{{ task.assigned_to.first_name }} {{ task.assigned_to.last_name }} ({{ task.assigned_to.username }})
